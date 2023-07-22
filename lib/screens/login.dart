@@ -1,5 +1,4 @@
 import 'package:app_motoblack_cliente/screens/main.dart';
-import 'package:app_motoblack_cliente/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

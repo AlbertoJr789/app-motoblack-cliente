@@ -32,7 +32,7 @@ class Welcome extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.8,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const Login()));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const Login()));
               },
               child: Stack(
                 alignment: Alignment.center,

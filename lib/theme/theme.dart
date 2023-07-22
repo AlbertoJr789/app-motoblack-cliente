@@ -7,11 +7,11 @@ var kTheme = ThemeData.dark().copyWith(
       selectionHandleColor: const Color.fromARGB(255, 197, 179, 88)),
   useMaterial3: true,
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Color.fromARGB(211, 0, 0, 0),
+    seedColor: const Color.fromARGB(211, 0, 0, 0),
     brightness: Brightness.dark,
     surface: const Color.fromARGB(255, 197, 179, 88),
   ),
-  scaffoldBackgroundColor: Color.fromARGB(255, 3, 3, 3),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 3, 3, 3),
   textTheme: GoogleFonts.latoTextTheme(),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
@@ -27,27 +27,24 @@ var kTheme = ThemeData.dark().copyWith(
     fillColor: Color.fromARGB(255, 216, 216, 216),
     border: OutlineInputBorder(
       borderSide: BorderSide(
-        color: const Color.fromARGB(211, 0, 0, 0),
+        color: Color.fromARGB(211, 0, 0, 0),
       ),
     ),
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(
-        color: const Color.fromARGB(255, 197, 179, 88),
+        color: Color.fromARGB(255, 197, 179, 88),
       ), // Border when TextField is focused
     ),
+    hintStyle:
+        TextStyle(color: Color.fromARGB(211, 0, 0, 0), fontSize: 18),
+    iconColor:Color.fromARGB(211, 0, 0, 0),
+    prefixIconColor: Color.fromARGB(211, 0, 0, 0),
   ),
-  primaryTextTheme: const TextTheme(
-    titleLarge: TextStyle(
-      color: Colors.white,
-      decoration: TextDecoration.none,
-    ),
-    titleMedium: TextStyle(
-      color: Colors.white,
-      decoration: TextDecoration.none,  
-    ),
-    bodyLarge: TextStyle(
-      color: Colors.white,
-      decoration: TextDecoration.none,  
-    ),
+  primaryColor: const Color.fromARGB(255, 197, 179, 88),
+  progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: Color.fromARGB(255, 197, 179, 88),
+  ),
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    selectedItemColor: Color.fromARGB(255, 197, 179, 88),
   ),
 );
