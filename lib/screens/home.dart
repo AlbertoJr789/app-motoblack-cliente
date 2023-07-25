@@ -30,7 +30,6 @@ class _HomeState extends State<Home> {
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Column(
-                    // mainAxisSize: MainAxisSize.max,
                     children: [
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.05,
@@ -38,7 +37,8 @@ class _HomeState extends State<Home> {
                       Material(
                         child: TextField(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => const DestinySelection()));
+                            FocusScope.of(context).unfocus();
+                            Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DestinySelection(location: snapshot.data!)));
                           },
                           decoration: const InputDecoration(
                               hintText: 'Vai pra onde?',

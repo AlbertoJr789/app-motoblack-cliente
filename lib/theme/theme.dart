@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 var kTheme = ThemeData.dark().copyWith(
+  appBarTheme: const AppBarTheme(
+    titleTextStyle: TextStyle(color: Colors.black87,fontSize: 24),
+    iconTheme: IconThemeData(color: Colors.black87,size: 24),
+  ),
   textSelectionTheme: const TextSelectionThemeData(
       cursorColor: Colors.black87,
       selectionHandleColor: const Color.fromARGB(255, 197, 179, 88)),
@@ -35,14 +39,13 @@ var kTheme = ThemeData.dark().copyWith(
         color: Color.fromARGB(255, 197, 179, 88),
       ), // Border when TextField is focused
     ),
-    hintStyle:
-        TextStyle(color: Color.fromARGB(211, 0, 0, 0), fontSize: 18),
-    iconColor:Color.fromARGB(211, 0, 0, 0),
+    hintStyle: TextStyle(color: Color.fromARGB(211, 0, 0, 0), fontSize: 18),
+    iconColor: Color.fromARGB(211, 0, 0, 0),
     prefixIconColor: Color.fromARGB(211, 0, 0, 0),
   ),
   primaryColor: const Color.fromARGB(255, 197, 179, 88),
   progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: Color.fromARGB(255, 197, 179, 88),
+    color: Color.fromARGB(255, 197, 179, 88),
   ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     selectedItemColor: Color.fromARGB(255, 197, 179, 88),
