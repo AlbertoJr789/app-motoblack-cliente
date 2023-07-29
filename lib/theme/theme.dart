@@ -3,12 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 var kTheme = ThemeData.dark().copyWith(
   appBarTheme: const AppBarTheme(
-    titleTextStyle: TextStyle(color: Colors.black87,fontSize: 24),
-    iconTheme: IconThemeData(color: Colors.black87,size: 24),
+    titleTextStyle: TextStyle(color: Colors.black87, fontSize: 24),
+    iconTheme: IconThemeData(color: Colors.black87, size: 24),
   ),
   textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: Colors.black87,
-      selectionHandleColor: const Color.fromARGB(255, 197, 179, 88)),
+    cursorColor: Colors.black87,
+    selectionHandleColor: const Color.fromARGB(255, 197, 179, 88),
+  ),
   useMaterial3: true,
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color.fromARGB(211, 0, 0, 0),
@@ -33,6 +34,23 @@ var kTheme = ThemeData.dark().copyWith(
       borderSide: BorderSide(
         color: Color.fromARGB(211, 0, 0, 0),
       ),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Color.fromARGB(210, 182, 21, 21),
+      ),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Color.fromARGB(210, 182, 21, 21),
+      ),
+    ),
+    errorStyle: TextStyle(
+      color: Color.fromARGB(210, 182, 21, 21),
+    ),
+    labelStyle: TextStyle(
+      fontSize: 18,
+      color: Color.fromARGB(211, 0, 0, 0),
     ),
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(

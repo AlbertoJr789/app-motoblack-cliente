@@ -11,56 +11,63 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  // Future<Position> _getLocation() async {
-  //   return await Geolocator.getCurrentPosition();
-  // }
+  bool _driveMode = false;
+  late var _driveRes;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Chupa'),
-      // ),
       resizeToAvoidBottomInset: false,
       body: FutureBuilder(
           future: Geolocator.getCurrentPosition(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.05,
-                      ),
-                      Material(
-                        child: TextField(
-                          onTap: () {
-                            FocusScope.of(context).unfocus();
-                            Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DestinySelection(location: snapshot.data!)));
-                          },
-                          decoration: const InputDecoration(
-                              hintText: 'Vai pra onde?',
-                              prefixIcon: Icon(Icons.search),
-                              iconColor: Colors.black),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.height * 0.75,
-                        child: GoogleMap(
-                          initialCameraPosition: CameraPosition(
-                              target: LatLng(snapshot.data!.latitude,
-                                  snapshot.data!.longitude),
-                              zoom: 16),
-                        ),
-                      ),
-                    ],
-                  ),
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    Material(
+                      child: _driveMode
+                          ? const Center(
+                              child: Text("Modo Corrida pae:"),
+                            )
+                          : TextField(
+                              onTap: () async {
+                                FocusScope.of(context).unfocus();
+                                _driveRes = await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (ctx) => DestinySelection(
+                                            location: snapshot.data!)));
+                                if (_driveRes != null) {
+                                  setState(() {
+                                    _driveMode = true;
+                                  });
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                  hintText: 'Vai pra onde?',
+                                  prefixIcon: Icon(Icons.search),
+                                  iconColor: Colors.black),
+                            ),
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    Expanded(
+                      child: _driveMode
+                          ? GoogleMap(
+                              initialCameraPosition: CameraPosition(
+                                  target: LatLng(_driveRes['origin']['lat'],
+                                      _driveRes['origin']['lon']),
+                                  zoom: 16),
+                            )
+                          : Container(),
+                    ),
+                  ],
                 ),
               );
             } else if (snapshot.hasError) {
