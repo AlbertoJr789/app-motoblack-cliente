@@ -6,40 +6,44 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import '../util/util.dart';
 
 class DestinySelection extends StatefulWidget {
-  DestinySelection({super.key, required this.location});
+  DestinySelection({super.key});
 
-  Position location;
   TextEditingController origin = new TextEditingController();
   TextEditingController destiny = new TextEditingController();
   bool firstAddress = true;
-
 
   @override
   State<DestinySelection> createState() => _DestinySelectionState();
 }
 
 class _DestinySelectionState extends State<DestinySelection> {
+
   bool _gettingAddress = false;
   bool _selectingOrigin = false;
   bool _selectingDestiny = true;
   CameraPosition? _currentPosition;
-  Map<String,double>? _originPosition;
-  Map<String,double>? _destinyPosition;
+  GoogleMapController? _mapController;
+  Map<String, double>? _originPosition;
+  Map<String, double>? _destinyPosition;
   final _formKey = GlobalKey<FormState>();
 
+  Future<Position> _getUserLocation() async {
+    Position position = await Geolocator.getCurrentPosition();
+    return position;
+  }
 
   void _getAddress(latitude, longitude) async {
     // latitude = -20.461858529051117;
     // longitude = -45.43592934890276;
     try {
-
-      if(widget.firstAddress == false){  
+      if (widget.firstAddress == false) {
         if (_selectingOrigin) {
-            widget.origin.text = "Carregando...";
+          widget.origin.text = "Carregando...";
         } else if (_selectingDestiny) {
-            widget.destiny.text = "Carregando...";
+          widget.destiny.text = "Carregando...";
         }
       }
 
@@ -54,31 +58,22 @@ class _DestinySelectionState extends State<DestinySelection> {
       } else {
         address = address.substring(0, address.indexOf(',') - 1);
       }
-      
-      if(widget.firstAddress == false){
+
+      if (widget.firstAddress == false) {
         if (_selectingOrigin) {
           widget.origin.text = address;
-          _originPosition = {
-            'lat': latitude,
-            'lon': longitude
-          }; 
+          _originPosition = {'lat': latitude, 'lon': longitude};
         } else if (_selectingDestiny) {
           widget.destiny.text = address;
-          _destinyPosition = {
-            'lat': latitude,
-            'lon': longitude
-          };
+          _destinyPosition = {'lat': latitude, 'lon': longitude};
         }
-      }else{
+      } else {
         widget.origin.text = address;
         widget.firstAddress = false;
-        _originPosition = {
-          'lat': latitude,
-          'lon': longitude
-        };
+        _originPosition = {'lat': latitude, 'lon': longitude};
       }
-
     } catch (e) {
+      showAlert(context, "Erro ao obter endereço no mapa!", "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.", e.toString());
       return;
     }
   }
@@ -86,14 +81,23 @@ class _DestinySelectionState extends State<DestinySelection> {
   @override
   void initState() {
     super.initState();
-    _getAddress(widget.location.latitude, widget.location.longitude);
-  }
-
-  @override
-  void dispose() {
-    widget.origin.clear();
-    widget.destiny.clear();
-    super.dispose();
+    widget.origin.text = "Obtendo sua localização...";
+    _getUserLocation().then((value) {
+      // _mapController?.animateCamera(
+      //   CameraUpdate.newCameraPosition(
+      //     CameraPosition(
+      //       target: LatLng(value.latitude, value.longitude),
+      //       zoom: 16,
+      //     ),
+      //   ),
+      // );
+      _getAddress(value.latitude, value.longitude);
+    }).catchError((error, stackTrace) {
+      showAlert(context,'Tivemos um erro ao obter sua localização!', error.toString(),
+          'Digite seu ponto de origem manualmente ou selecione-o no mapa.');
+      _selectingOrigin = true;
+      _selectingDestiny = false;
+    });
   }
 
   @override
@@ -131,12 +135,12 @@ class _DestinySelectionState extends State<DestinySelection> {
                               _selectingDestiny = false;
                               _selectingOrigin = true;
                             },
-                            validator: (value){
-                               if (value == null ||
-                                value.isEmpty ||
-                                _originPosition == null) {
-                              return '';
-                            }
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  _originPosition == null) {
+                                return '';
+                              }
                             },
                           ),
                         ),
@@ -156,13 +160,13 @@ class _DestinySelectionState extends State<DestinySelection> {
                             onTap: () {
                               _selectingDestiny = true;
                               _selectingOrigin = false;
-                            }, 
-                            validator: (value){
-                                  if (value == null ||
-                                      value.isEmpty ||
-                                     _destinyPosition == null) {
-                              return '';
-                            }
+                            },
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  _destinyPosition == null) {
+                                return '';
+                              }
                             },
                           ),
                         ),
@@ -176,9 +180,8 @@ class _DestinySelectionState extends State<DestinySelection> {
           Expanded(
             child: Stack(children: [
               GoogleMap(
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                        widget.location.latitude, widget.location.longitude),
+                initialCameraPosition: const CameraPosition(
+                    target: LatLng(-20.4630769, -45.4443985),
                     zoom: 16),
                 onCameraMove: (position) {
                   _currentPosition = position;
@@ -193,6 +196,9 @@ class _DestinySelectionState extends State<DestinySelection> {
                     _gettingAddress = false;
                   }
                 },
+                onMapCreated: (controller) {
+                  _mapController = controller;
+                },
               ),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -202,8 +208,8 @@ class _DestinySelectionState extends State<DestinySelection> {
                     width: MediaQuery.of(context).size.width * 0.7,
                     child: ElevatedButton(
                       onPressed: () {
-                        if(_formKey.currentState!.validate()){
-                          Navigator.pop(context,{
+                        if (_formKey.currentState!.validate()) {
+                          Navigator.pop(context, {
                             "origin": _originPosition,
                             "destiny": _destinyPosition
                           });
@@ -230,5 +236,12 @@ class _DestinySelectionState extends State<DestinySelection> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.origin.clear();
+    widget.destiny.clear();
+    super.dispose();
   }
 }

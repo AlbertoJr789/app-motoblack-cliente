@@ -68,4 +68,5 @@ var kTheme = ThemeData.dark().copyWith(
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     selectedItemColor: Color.fromARGB(255, 197, 179, 88),
   ),
+  dialogTheme: DialogTheme(backgroundColor: Colors.white),
 );

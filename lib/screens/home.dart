@@ -18,11 +18,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: FutureBuilder(
-          future: Geolocator.getCurrentPosition(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Padding(
+      body: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -38,10 +34,7 @@ class _HomeState extends State<Home> {
                           : TextField(
                               onTap: () async {
                                 FocusScope.of(context).unfocus();
-                                _driveRes = await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (ctx) => DestinySelection(
-                                            location: snapshot.data!)));
+                                _driveRes = await Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => DestinySelection()));
                                 if (_driveRes != null) {
                                   setState(() {
                                     _driveMode = true;
@@ -69,18 +62,7 @@ class _HomeState extends State<Home> {
                     ),
                   ],
                 ),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                  'Erro ao obter localização: ${snapshot.error}',
-                  style: const TextStyle(color: Colors.red, fontSize: 20),
-                ),
-              );
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          }),
+              ),
     );
   }
 }
