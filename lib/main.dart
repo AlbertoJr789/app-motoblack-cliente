@@ -1,4 +1,5 @@
 import 'package:app_motoblack_cliente/screens/home.dart';
+import 'package:app_motoblack_cliente/screens/main.dart';
 import 'package:app_motoblack_cliente/screens/welcome.dart';
 import 'package:app_motoblack_cliente/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Moto Black',
       theme: kTheme,
-      home: const Home(),
+      home: const Main(),
     );
   }
 }
