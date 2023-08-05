@@ -26,7 +26,7 @@ class _ActivitiesState extends State<Activities> {
             },
             child: Card(
               shadowColor: const Color.fromARGB(255, 197, 179, 88),
-              color: Color.fromARGB(243, 221, 221, 219),
+              color: const Color.fromARGB(243, 221, 221, 219),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(children: [
