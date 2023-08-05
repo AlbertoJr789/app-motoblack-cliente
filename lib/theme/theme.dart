@@ -69,4 +69,11 @@ var kTheme = ThemeData.dark().copyWith(
     selectedItemColor: Color.fromARGB(255, 197, 179, 88),
   ),
   dialogTheme: DialogTheme(backgroundColor: Colors.white),
+  tabBarTheme: const TabBarTheme(
+  labelColor: Colors.black,
+  unselectedLabelColor: Colors.black54,
+  indicator: UnderlineTabIndicator(
+    borderSide: BorderSide(color: Colors.black, width: 2.0),
+    insets: EdgeInsets.symmetric(horizontal: 16.0),
+  ),)
 );
