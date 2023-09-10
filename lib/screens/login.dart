@@ -29,7 +29,7 @@ class Login extends StatelessWidget {
             height: 40,
           ),
           const Text(
-            'Digite seu número de celular: ',
+            'Digite seu e-mail: ',
             style: TextStyle(
                 decoration: TextDecoration.none,
                 fontSize: 18,

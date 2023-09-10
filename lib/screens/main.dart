@@ -25,7 +25,10 @@ class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[_pageIndex],
+      body: IndexedStack(
+        index: _pageIndex,
+        children: pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         currentIndex: _pageIndex,

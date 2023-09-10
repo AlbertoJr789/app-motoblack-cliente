@@ -14,7 +14,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 1,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Dados Pessoais'),
@@ -23,19 +23,19 @@ class _ProfileState extends State<Profile> {
               Tab(
                 text: 'Info. Conta',
               ),
-              Tab(
-                text: 'Pagamentos',
-              ),
-              Tab(
-                text: 'Ajuda',
-              ),
+              // Tab(
+              //   text: 'Pagamentos',
+              // ),
+              // Tab(
+              //   text: 'Ajuda',
+              // ),
             ],
           ),
         ),
         body: const TabBarView(children: [
              ProfileDetails(),
-             PaymentDetails(),
-             HelpDetails()
+            //  PaymentDetails(),
+            //  HelpDetails()
         ]),
       ),
     );

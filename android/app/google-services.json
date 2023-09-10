@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "526103764084",
+    "firebase_url": "https://moto-black-default-rtdb.firebaseio.com",
+    "project_id": "moto-black",
+    "storage_bucket": "moto-black.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526103764084:android:d6e3081e5e6e4095cac521",
+        "android_client_info": {
+          "package_name": "com.example.app_motoblack_cliente"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNpnM7xYxUpsW34aBdlnhqvtI3YWGY9Kg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

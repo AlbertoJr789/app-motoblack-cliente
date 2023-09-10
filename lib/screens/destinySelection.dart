@@ -83,14 +83,14 @@ class _DestinySelectionState extends State<DestinySelection> {
     super.initState();
     widget.origin.text = "Obtendo sua localização...";
     _getUserLocation().then((value) {
-      // _mapController?.animateCamera(
-      //   CameraUpdate.newCameraPosition(
-      //     CameraPosition(
-      //       target: LatLng(value.latitude, value.longitude),
-      //       zoom: 16,
-      //     ),
-      //   ),
-      // );
+      _mapController?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(value.latitude, value.longitude),
+            zoom: 16,
+          ),
+        ),
+      );
       _getAddress(value.latitude, value.longitude);
     }).catchError((error, stackTrace) {
       showAlert(context,'Tivemos um erro ao obter sua localização!', error.toString(),
