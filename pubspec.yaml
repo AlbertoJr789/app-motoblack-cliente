@@ -41,6 +41,9 @@ dependencies:
   geolocator: ^9.0.2
   http: ^1.1.0
   firebase_core: ^2.15.1
+  firebase_database: ^10.2.5
+  flutter_inappwebview: ^5.8.0
+  fluttertoast: ^8.2.2
 
 
 

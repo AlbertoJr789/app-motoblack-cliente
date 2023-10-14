@@ -1,6 +1,9 @@
 import 'package:app_motoblack_cliente/screens/main.dart';
+import 'package:app_motoblack_cliente/screens/register.dart';
+import 'package:app_motoblack_cliente/widgets/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -28,13 +31,36 @@ class Login extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          const Text(
-            'Digite seu e-mail: ',
-            style: TextStyle(
-                decoration: TextDecoration.none,
-                fontSize: 18,
-                color: Colors.white),
-            textAlign: TextAlign.start,
+          Container(
+            width: double.infinity,
+            child: const Text(
+              'Digite seu e-mail ou nome de usuário: ',
+              style: TextStyle(
+                  decoration: TextDecoration.none,
+                  fontSize: 14,
+                  color: Colors.white),
+              textAlign: TextAlign.start,
+            ),
+          ),
+          const SizedBox(
+            height: 8.0,
+          ),
+          const Material(
+            child: TextField(),
+          ),
+          const SizedBox(
+            height: 8.0,
+          ),
+          Container(
+            width: double.infinity,
+            child: const Text(
+              'Digite sua senha: ',
+              style: TextStyle(
+                  decoration: TextDecoration.none,
+                  fontSize: 14,
+                  color: Colors.white),
+              textAlign: TextAlign.start,
+            ),
           ),
           const SizedBox(
             height: 8.0,
@@ -44,6 +70,28 @@ class Login extends StatelessWidget {
           ),
           const SizedBox(
             height: 4.0,
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 4, bottom: 4),
+            child: Container(
+                width: double.infinity,
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (ctx) => Register()));
+                   
+                  },
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Não tem conta ainda?',
+                      style: TextStyle(
+                          fontSize: 14,
+                          decoration: TextDecoration.underline,
+                          color: Theme.of(context).colorScheme.surface),
+                    ),
+                  ),
+                )),
           ),
           Container(
             width: double.infinity,

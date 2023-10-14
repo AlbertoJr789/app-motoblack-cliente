@@ -12,10 +12,7 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with TickerProviderStateMixin,AutomaticKeepAliveClientMixin<Home> {
-
-  @override
-  bool get wantKeepAlive => true;
+class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   bool _driveMode = false;
   late var _driveRes;
@@ -58,7 +55,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin,AutomaticKeep
               begin: Alignment.bottomLeft, end: Alignment.topLeft),
           weight: 1),
     ]).animate(_controller);
-
     _bottomAlignmentAnimation = TweenSequence<Alignment>([
       TweenSequenceItem<Alignment>(
           tween: Tween<Alignment>(
@@ -123,7 +119,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin,AutomaticKeep
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); 
+    // super.build(context); 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Padding(
