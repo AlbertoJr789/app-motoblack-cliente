@@ -44,6 +44,8 @@ dependencies:
   firebase_database: ^10.2.5
   flutter_inappwebview: ^5.8.0
   fluttertoast: ^8.2.2
+  dio: ^5.3.3
+  shared_preferences: ^2.2.2
 
 
 

@@ -6,6 +6,7 @@ import 'package:app_motoblack_cliente/theme/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login.dart';
 
 void main() async {
@@ -13,19 +14,26 @@ void main() async {
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+
+  //verifica se o usuário já logou
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? token = await prefs.getString('token');
+  runApp(MyApp(login: token != null ? false : true));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
+  bool? login;
+
+   MyApp({super.key,required this.login});
 
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
       title: 'Moto Black',
       theme: kTheme,
-      home: const Login(),
+      home:  login! ? Login() : const Main(),
     );
   }
 }

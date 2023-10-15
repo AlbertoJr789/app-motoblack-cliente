@@ -1,4 +1,5 @@
 
+import 'package:app_motoblack_cliente/controllers/apiClient.dart';
 import 'package:app_motoblack_cliente/widgets/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -18,7 +19,7 @@ class _RegisterState extends State<Register> {
         body: Center(
       child: InAppWebView(
         initialUrlRequest: URLRequest(
-          url: Uri.parse('http://moto-black.domcloud.io/register'),
+          url: Uri.parse("${ApiClient.instance.baseUrl}/register"),
         ),
         initialOptions: InAppWebViewGroupOptions(
           crossPlatform: InAppWebViewOptions(clearCache: true),
