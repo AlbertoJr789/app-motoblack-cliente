@@ -2,7 +2,6 @@ import 'package:app_motoblack_cliente/controllers/apiClient.dart';
 import 'package:app_motoblack_cliente/util/util.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController {

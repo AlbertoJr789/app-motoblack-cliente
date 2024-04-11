@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -11,8 +10,8 @@ import '../util/util.dart';
 class DestinySelection extends StatefulWidget {
   DestinySelection({super.key});
 
-  TextEditingController origin = new TextEditingController();
-  TextEditingController destiny = new TextEditingController();
+  TextEditingController origin =  TextEditingController();
+  TextEditingController destiny = TextEditingController();
   bool firstAddress = true;
 
   @override

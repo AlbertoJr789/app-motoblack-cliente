@@ -2,7 +2,6 @@ import 'package:app_motoblack_cliente/screens/activities.dart';
 import 'package:app_motoblack_cliente/screens/home.dart';
 import 'package:app_motoblack_cliente/screens/profile.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 
