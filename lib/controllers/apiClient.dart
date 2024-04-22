@@ -6,7 +6,7 @@ class ApiClient {
   ApiClient._(){
      dio.options.connectTimeout = const Duration(seconds: 2);
      dio.options.receiveTimeout = const Duration(seconds: 3);
-     dio.options.baseUrl = 'http://moto-black.domcloud.io';
+     dio.options.baseUrl = 'https://fukpuja.sao.dom.my.id';
      dio.options.responseType = ResponseType.json;
   }
 

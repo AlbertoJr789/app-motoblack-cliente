@@ -3,8 +3,6 @@ import 'package:app_motoblack_cliente/screens/home.dart';
 import 'package:app_motoblack_cliente/screens/profile.dart';
 import 'package:flutter/material.dart';
 
-
-
 class Main extends StatefulWidget {
   const Main({super.key});
 
@@ -13,13 +11,13 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
-   int _pageIndex = 0;
-   List<Widget> pages = [Home(), const Activities(), const Profile()];
- 
-  void _selectPage(int index) async {  
-      setState(() {
-        _pageIndex = index;
-      });
+  int _pageIndex = 0;
+  List<Widget> pages = [Home(), const Activities(), const Profile()];
+
+  void _selectPage(int index) async {
+    setState(() {
+      _pageIndex = index;
+    });
   }
 
   @override

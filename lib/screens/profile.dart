@@ -33,9 +33,9 @@ class _ProfileState extends State<Profile> {
           ),
         ),
         body: const TabBarView(children: [
-             ProfileDetails(),
-            //  PaymentDetails(),
-            //  HelpDetails()
+          ProfileDetails(),
+          //  PaymentDetails(),
+          //  HelpDetails()
         ]),
       ),
     );
