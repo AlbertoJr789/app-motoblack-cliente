@@ -1,16 +1,31 @@
 import 'package:app_motoblack_cliente/models/Address.dart';
 
-class Agent{
+enum AgentType { motoblack, driver, unknown }
 
-  String name;
-  int? type;
-  Address? currentLocation;
-    
-  Agent({required this.name,this.type,this.currentLocation});
-
-
-  factory Agent.fromMap(Map<String,dynamic> map){
-      return Agent(name: map['name']);
+AgentType _agentTypeToEnum(int type) {
+  switch (type) {
+    case 1:
+      return AgentType.motoblack;
+    case 2:
+      return AgentType.driver;
+    default:
+      return AgentType.unknown;
   }
+}
 
+class Agent {
+  String name;
+  AgentType type;
+  Address? currentLocation;
+  String? avatar;
+
+  Agent({required this.name, required this.type, this.currentLocation, this.avatar});
+
+  factory Agent.fromMap(Map<String, dynamic> map) {
+    return Agent(
+        name: map['name'],
+        avatar: map['avatar'], 
+        type: _agentTypeToEnum(map['type']['tipo']),
+        );
+  }
 }

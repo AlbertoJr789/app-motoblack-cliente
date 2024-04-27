@@ -15,66 +15,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   bool _driveMode = false;
   late var _driveRes;
-  late AnimationController _controller;
-  late Animation<Alignment> _topAlignmentAnimation;
-  late Animation<Alignment> _bottomAlignmentAnimation;
   late Timer _timer;
   late String _time;
   final Stopwatch _stopwatch = Stopwatch();
-
 
   // @override
   void dispose() {
     _timer.cancel();
     _stopwatch.stop();
-    _controller.dispose();
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 4));
-    _topAlignmentAnimation = TweenSequence<Alignment>([
-      TweenSequenceItem<Alignment>(
-          tween: Tween<Alignment>(
-              begin: Alignment.topLeft, end: Alignment.topRight),
-          weight: 1),
-      TweenSequenceItem<Alignment>(
-          tween: Tween<Alignment>(
-              begin: Alignment.topRight, end: Alignment.bottomRight),
-          weight: 1),
-      TweenSequenceItem<Alignment>(
-          tween: Tween<Alignment>(
-              begin: Alignment.bottomRight, end: Alignment.bottomLeft),
-          weight: 1),
-      TweenSequenceItem<Alignment>(
-          tween: Tween<Alignment>(
-              begin: Alignment.bottomLeft, end: Alignment.topLeft),
-          weight: 1),
-    ]).animate(_controller);
-    _bottomAlignmentAnimation = TweenSequence<Alignment>([
-      TweenSequenceItem<Alignment>(
-          tween: Tween<Alignment>(
-              begin: Alignment.bottomRight, end: Alignment.bottomLeft),
-          weight: 1),
-      TweenSequenceItem<Alignment>(
-          tween: Tween<Alignment>(
-              begin: Alignment.bottomLeft, end: Alignment.topLeft),
-          weight: 1),
-      TweenSequenceItem<Alignment>(
-          tween: Tween<Alignment>(
-              begin: Alignment.topLeft, end: Alignment.topRight),
-          weight: 1),
-      TweenSequenceItem<Alignment>(
-          tween: Tween<Alignment>(
-              begin: Alignment.topRight, end: Alignment.bottomRight),
-          weight: 1),
-    ]).animate(_controller);
-    _controller.repeat();
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  _setTimer(){
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if(_stopwatch.elapsed.inHours > 0){
         setState(() {
           _time = '${_stopwatch.elapsed.inHours.toString().padLeft(2, '0')}:${_stopwatch.elapsed.inMinutes.toString().padLeft(2, '0')}:${(_stopwatch.elapsed.inSeconds % 60).toString().padLeft(2, '0')}';
@@ -85,8 +38,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         });
       }
     });
-
   }
+
 
   void _endRideDialog(){
       showDialog(
@@ -119,6 +72,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // super.build(context); 
+    if(_driveMode){
+      _stopwatch.start();
+      _setTimer();
+    } 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Padding(
@@ -131,21 +88,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             ),
             Material(
               child: _driveMode
-                  ? AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, _) {
-                        _stopwatch.start();
-                        return Container(
+                  ? Container(
                           width: double.infinity,
                           height: MediaQuery.of(context).size.height * 0.1,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             gradient: LinearGradient(
-                                colors: const [
+                                colors:  [
                                   Color.fromARGB(255, 197, 179, 88),
                                   Color.fromARGB(255, 238, 205, 39),
-                                ],
-                                begin: _topAlignmentAnimation.value,
-                                end: _bottomAlignmentAnimation.value),
+                                ],),
                           ),
                           child: Center(
                             child: Column(
@@ -177,9 +128,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               ],
                             ),
                           ),
-                        );
-                      },
-                    )
+                        )
                   : TextField(
                       onTap: () async {
                         FocusScope.of(context).unfocus();

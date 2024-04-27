@@ -1,6 +1,7 @@
 class Address {
   double? latitude;
   double? longitude;
+  String zipCode;
   String street;
   String number;
   String neighborhood;
@@ -13,6 +14,7 @@ class Address {
       {this.latitude,
       this.longitude,
       required this.street,
+      required this.zipCode,
       required this.number,
       required this.neighborhood,
       this.complement,
@@ -22,6 +24,9 @@ class Address {
 
   factory Address.fromMap(Map<String, dynamic> map) {
     return Address(
+        latitude: double.parse(map['latitude']),
+        longitude: double.parse(map['longitude']),
+        zipCode: map['zipCode'],
         street: map['street'],
         number: map['number'],
         neighborhood: map['neighborhood'],
