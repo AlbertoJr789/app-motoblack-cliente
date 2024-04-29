@@ -30,8 +30,23 @@ class _DestinySelectionState extends State<DestinySelection> {
   final _formKey = GlobalKey<FormState>();
 
   Future<Position> _getUserLocation() async {
-    Position position = await Geolocator.getCurrentPosition();
-    return position;
+    try {
+
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+          throw 'Seu serviço de localização está desativado! Reative-o nas configurações do seu dispositivo.';
+      }
+
+      LocationPermission permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+          throw 'Permissão negada! Precisamos da sua permissão para obter sua localização automaticamente!';
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
+      return position;
+    } catch (e) {
+      return Future.error(e.toString());
+    }
   }
 
   void _getAddress(latitude, longitude) async {
@@ -92,8 +107,8 @@ class _DestinySelectionState extends State<DestinySelection> {
       );
       _getAddress(value.latitude, value.longitude);
     }).catchError((error, stackTrace) {
-      showAlert(context,'Tivemos um erro ao obter sua localização!', error.toString(),
-          'Digite seu ponto de origem manualmente ou selecione-o no mapa.');
+      showAlert(context,'Tivemos um erro ao obter sua localização!','Digite seu ponto de origem manualmente ou selecione-o no mapa.',
+          error.toString());
       _selectingOrigin = true;
       _selectingDestiny = false;
     });

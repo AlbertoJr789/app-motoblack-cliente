@@ -7,7 +7,7 @@ void showAlert(BuildContext context,String message, String sol, String error) {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Ops!'),
-        content: Text("${message}\n\n${sol}\n\nErro: ${error}"),
+        content: Text("${message}\n\nMotivo do erro: ${error}\n\n${sol}"),
         actions: [
           ElevatedButton(
             onPressed: () {

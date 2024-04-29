@@ -17,20 +17,24 @@ class _FloatingLoaderState extends State<FloatingLoader> {
         valueListenable: widget.active,
         builder: (context, bool isLoading, _) {
           return isLoading
-              ?  Positioned(
-                  left: (MediaQuery.of(context).size.width/2)-20,
+              ? Positioned(
+                  left: (MediaQuery.of(context).size.width / 2) - 40,
                   bottom: 24,
-                  child: const SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CircleAvatar(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2,),
+                  child: SizedBox(
+                    width: 80,
+                    height: 80,
+                    child: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          color: Theme.of(context).colorScheme.background,
+                        ),
+                      ),
                     ),
-                  ),
-                ))
+                  ))
               : Container();
         });
   }

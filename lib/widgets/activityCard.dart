@@ -12,7 +12,7 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String title = '${activity.typeName} ${DateFormat('d/M/y H:m').format(activity.createdAt)}';
+    String title = '${activity.typeName} ${DateFormat('dd/MM/y H:m').format(activity.createdAt)}';
     String addr = '${activity.origin.street} ${activity.origin.number}';
     print('build card');
     return Material(
@@ -21,7 +21,7 @@ class ActivityCard extends StatelessWidget {
         splashColor: const Color.fromARGB(255, 197, 179, 88),
         onTap: () {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const ActivityDetails()));
+              MaterialPageRoute(builder: (context) => ActivityDetails(activity: activity)));
         },
         child: Card(
           shadowColor: const Color.fromARGB(255, 197, 179, 88),

@@ -25,21 +25,21 @@ class _ActivitiesState extends State<Activities> {
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(() { 
-      if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent && controller.hasMore){
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          controller.hasMore) {
         loadActivities();
       }
     });
-    controller = Provider.of<ActivityController>(context,listen: false);
+    controller = Provider.of<ActivityController>(context, listen: false);
     loadActivities();
   }
 
   loadActivities() async {
-    print('loadActivities');
     _isLoading.value = true;
     await controller.getActivities();
     _isLoading.value = false;
-    print('loadedActivities');
   }
 
   @override
@@ -47,22 +47,20 @@ class _ActivitiesState extends State<Activities> {
     controller = context.watch<ActivityController>();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Atividades mais recentes'),
+        title: const Text('Atividades mais recentes'),
       ),
-      body: Column(
-        children: [
-          Stack(
-            children: [
-              ListView.builder(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+        child: Stack(
+          children: [
+            ListView.builder(
                 controller: _scrollController,
                 itemCount: controller.activities.length,
-                itemBuilder: (ctx, index) => ActivityCard(activity: controller.activities[index])
-              ),
-              FloatingLoader(active: _isLoading)
-            ],
-          ),
-          const SizedBox(height: 20,)
-        ],
+                itemBuilder: (ctx, index) =>
+                    ActivityCard(activity: controller.activities[index])),
+            FloatingLoader(active: _isLoading)
+          ],
+        ),
       ),
     );
   }

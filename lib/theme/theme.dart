@@ -10,7 +10,6 @@ var kTheme = ThemeData.dark().copyWith(
     cursorColor: Colors.black87,
     selectionHandleColor: const Color.fromARGB(255, 197, 179, 88),
   ),
-  useMaterial3: true,
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color.fromARGB(211, 0, 0, 0),
     brightness: Brightness.dark,

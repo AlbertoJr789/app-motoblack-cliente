@@ -1,118 +1,182 @@
+import 'package:app_motoblack_cliente/models/Activity.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 class ActivityDetails extends StatelessWidget {
-  const ActivityDetails({super.key});
-  // latitude = -20.461858529051117;
-  // longitude = -45.43592934890276;
+  final Activity activity;
+
+  const ActivityDetails({super.key, required this.activity});
+
   @override
   Widget build(BuildContext context) {
+    String originTime = DateFormat('dd/MM/y HH:mm').format(activity.createdAt);
+    String addrOrigin = '${activity.origin.street} ${activity.origin.number}';
+
+    String destinyTime =
+        DateFormat('dd/MM/y HH:mm').format(activity.finishedAt!);
+    String addrDestiny = '${activity.origin.street} ${activity.origin.number}';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes da Atividade'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: GoogleMap(
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(-20.461858529051117, -45.43592934890276),
-                  zoom: 12,
-                ),
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: LatLng(-20.461858529051117, -45.43592934890276),
+                zoom: 12,
               ),
             ),
-            Container(
-              color: Color.fromARGB(243, 255, 255, 254),
+          ),
+          SingleChildScrollView(
+            child: Container(
+              color: Color.fromARGB(255, 245, 245, 245),
               width: double.infinity,
               child: Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '05/08/2023 às 8:30 até 05/08/2023 às 9:00',
+                child: Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.not_started,
+                            color: Colors.black,
+                            size: 40,
+                          ),
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Text(
+                              addrOrigin,
+                              textAlign: TextAlign.start,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Icon(
+                            Icons.timer_sharp,
+                            color: Colors.black,
+                            size: 40,
+                          ),
+                          Text(
+                            originTime,
                             textAlign: TextAlign.start,
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 18.0),
+                        child: SizedBox(
+                          height: 30,
+                          width: 3,
+                          child: Container(
+                            color: Colors.black,
                           ),
                         ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          'R\$10,00',
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ],
-                    ),
-                    Divider(
-                      color: Color.fromARGB(153, 126, 124, 124),
-                      thickness: 0.5,
-                    ),
-                    Text(
-                      'Origem: Rua Jote Correa 18',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Text(
-                      'Destino: Rua Jote Correa 28',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Divider(
-                      color: Color.fromARGB(153, 126, 124, 124),
-                      thickness: 0.5,
-                    ),
-                    Text(
-                      'Observações relatadas: ui dolorem ipsum, quia dolor sit amet consectetur adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatemui dolorem ipsum, quia dolor sit amet consectetur adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Divider(
-                      color: Color.fromARGB(153, 126, 124, 124),
-                      thickness: 0.5,
-                    ),
-                    Row(children: [
-                      Container(
-                        width: 100,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Mototaxista Responsável',
-                              textAlign: TextAlign.center,
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.flag_circle,
+                            color: Colors.black,
+                            size: 40,
+                          ),
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Text(
+                              addrDestiny,
+                              textAlign: TextAlign.start,
+                              style: TextStyle(fontSize: 14),
                             ),
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.blue,
-                            )
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Icon(
+                            Icons.timer_sharp,
+                            color: Colors.black,
+                            size: 40,
+                          ),
+                          Text(
+                            destinyTime,
+                            textAlign: TextAlign.start,
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          // mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Arlindo de Souza Arantes'),
-                            Text('Veículo HYJ-9486'),
-                          ],
-                        ),
+                      const Divider(
+                        color: Color.fromARGB(232, 221, 214, 214),
+                        thickness: 0.5,
                       ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [Text('Nota'), Text('☆☆☆☆☆')],
-                      )
-                    ]),
-                  ],
+                      const SizedBox(height: 10,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundImage:
+                                Image.network(activity.agent.avatar!).image,
+                            backgroundColor: Colors.blue,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Flexible(
+                            child: Text(
+                              'Você avaliou ${activity.agent.name}',
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          RatingBar(
+                            ignoreGestures: true,
+                            initialRating:
+                                double.parse(activity.evaluation.toString()),
+                            itemCount: 5,
+                            ratingWidget: RatingWidget(
+                                full: const Icon(Icons.star, color: Colors.amber),
+                                half: const Icon(Icons.star_half, color: Colors.amber),
+                                empty: const Icon(
+                                  Icons.star_outline_outlined,
+                                  color: Color.fromARGB(255, 209, 203, 203),
+                                )),
+                            onRatingUpdate: (rate) {},
+                          )
+                          // EvaluationStar(activity.evaluation),
+                        ],
+                      ),
+                      const SizedBox(height: 10,),
+                      const Divider(
+                        color: Color.fromARGB(232, 221, 214, 214),
+                        thickness: 0.5,
+                      ),
+                      Text(
+                        'Observações relatadas: ${activity.obs ?? '-'}',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      
+                    ],
+                  ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        
+        
+        ],
       ),
     );
   }

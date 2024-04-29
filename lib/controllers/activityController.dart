@@ -9,23 +9,9 @@ class ActivityController extends ChangeNotifier {
   String error = '';
   List<Activity> activities = [];
 
-  final ApiClient apiClient = ApiClient.instance;
-
   getActivities() async {
     try {
-      String? token = await apiClient.token;
-      Response response = await apiClient.dio.get(
-        '/api/activities?page=$_page',
-        options: Options(
-          contentType: Headers.jsonContentType,
-          headers: {
-            'accept': 'application/json',
-            'Authorization': "Bearer $token"
-          },
-        ),
-        queryParameters: {'page': _page},
-      );
-    print(response.data);
+      Response response = await Activity.getActivities(_page);
       if (response.data['success']) {
         final data = response.data['data']['result'];
         _hasMore = response.data['data']['hasMore'];
@@ -36,13 +22,12 @@ class ActivityController extends ChangeNotifier {
       } else {
         _page = 1;
         _hasMore = true;
-        throw new Exception(response.data['message']);
+        throw response.data['message'];
       }
-      this.error = '';
+      error = '';
     } catch (e) {
-      this.error = e.toString();
+      error = e.toString();
     }
-    print(this.error);
     notifyListeners();
   }
 

@@ -1,6 +1,8 @@
+import 'package:app_motoblack_cliente/controllers/apiClient.dart';
 import 'package:app_motoblack_cliente/models/Address.dart';
 import 'package:app_motoblack_cliente/models/Agent.dart';
 import 'package:app_motoblack_cliente/models/Vehicle.dart';
+import 'package:dio/dio.dart';
 
 enum ActivityType { delivery, trip, unknown }
 
@@ -29,6 +31,9 @@ class Activity {
   bool canceled;
   String? cancellingReason;
   DateTime createdAt;
+  DateTime? finishedAt;
+
+  static final ApiClient apiClient = ApiClient.instance;
 
   Activity(
       {required this.id,
@@ -43,7 +48,8 @@ class Activity {
       required this.canceled,
       required this.route,
       this.cancellingReason,
-      required this.createdAt});
+      required this.createdAt,
+      this.finishedAt});
 
   factory Activity.fromMap(Map<String, dynamic> map) {
     return Activity(
@@ -57,9 +63,10 @@ class Activity {
         evaluation: map['passengerEvaluation'],
         route: map['route'],
         canceled: map['cancelled'] == 1 ? true : false,
-        obs: map['obs'],
+        obs: map['passengerObs'],
         cancellingReason: map['cancellingReason'],
-        createdAt: DateTime.parse(map['createdAt']));
+        createdAt: DateTime.parse(map['createdAt']),
+        finishedAt: DateTime.parse(map['finishedAt']));
   }
 
   String get typeName {
@@ -69,5 +76,21 @@ class Activity {
       default: return '';
     }
   }
+
+  static getActivities(int page) async {
+    String? token = await apiClient.token;
+    return await apiClient.dio.get(
+        '/api/activities',
+        options: Options(
+          contentType: Headers.jsonContentType,
+          headers: {
+            'accept': 'application/json',
+            'Authorization': "Bearer $token"
+          },
+        ),
+        queryParameters: {'page': page},
+      );
+  }
+
 
 }
