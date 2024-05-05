@@ -1,4 +1,8 @@
 import 'package:app_motoblack_cliente/models/Activity.dart';
+import 'package:app_motoblack_cliente/models/Agent.dart';
+import 'package:app_motoblack_cliente/models/Vehicle.dart';
+import 'package:app_motoblack_cliente/widgets/infoBanner.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -20,10 +24,28 @@ class ActivityDetails extends StatelessWidget {
         DateFormat('dd/MM/y HH:mm').format(activity.finishedAt!);
     String addrDestiny = '${activity.origin.street} ${activity.origin.number}';
 
+    final showEval, showObs;
+
+    if (activity.canceled) {
+      showEval =
+          InfoBanner(type: 'danger', msg: 'Esta atividade foi cancelada!');
+      showObs = Text(
+        'Justificativa de cancelamento: ${activity.cancellingReason ?? '-'}',
+        style: TextStyle(fontSize: 18),
+      );
+    } else {
+      showEval = _evaluation(activity);
+      showObs = Text(
+        'Observações relatadas: ${activity.obs ?? '-'}',
+        style: TextStyle(fontSize: 18),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes da Atividade'),
       ),
+      backgroundColor: const Color.fromARGB(255, 245, 245, 245),
       body: Column(
         children: [
           Container(
@@ -38,7 +60,6 @@ class ActivityDetails extends StatelessWidget {
           ),
           SingleChildScrollView(
             child: Container(
-              color: Color.fromARGB(255, 245, 245, 245),
               width: double.infinity,
               child: Padding(
                 padding: EdgeInsets.all(8.0),
@@ -120,62 +141,133 @@ class ActivityDetails extends StatelessWidget {
                         color: Color.fromARGB(232, 221, 214, 214),
                         thickness: 0.5,
                       ),
-                      const SizedBox(height: 10,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundImage:
-                                Image.network(activity.agent.avatar!).image,
-                            backgroundColor: Colors.blue,
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Flexible(
-                            child: Text(
-                              'Você avaliou ${activity.agent.name}',
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          RatingBar(
-                            ignoreGestures: true,
-                            initialRating:
-                                double.parse(activity.evaluation.toString()),
-                            itemCount: 5,
-                            ratingWidget: RatingWidget(
-                                full: const Icon(Icons.star, color: Colors.amber),
-                                half: const Icon(Icons.star_half, color: Colors.amber),
-                                empty: const Icon(
-                                  Icons.star_outline_outlined,
-                                  color: Color.fromARGB(255, 209, 203, 203),
-                                )),
-                            onRatingUpdate: (rate) {},
-                          )
-                          // EvaluationStar(activity.evaluation),
-                        ],
+                      const SizedBox(
+                        height: 10,
                       ),
-                      const SizedBox(height: 10,),
+                      _agentDetails(activity.agent, activity.vehicle),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       const Divider(
                         color: Color.fromARGB(232, 221, 214, 214),
                         thickness: 0.5,
                       ),
-                      Text(
-                        'Observações relatadas: ${activity.obs ?? '-'}',
-                        style: TextStyle(fontSize: 18),
+                      const SizedBox(
+                        height: 10,
                       ),
-                      
+                      showEval,
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(
+                        color: Color.fromARGB(232, 221, 214, 214),
+                        thickness: 0.5,
+                      ),
+                      showObs
                     ],
                   ),
                 ),
               ),
             ),
           ),
-        
-        
+        ],
+      ),
+    );
+  }
+
+  Widget _evaluation(activity) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Flexible(
+          child: Text(
+            'Sua avaliação',
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        RatingBar(
+          ignoreGestures: true,
+          initialRating: double.parse(activity.evaluation.toString()),
+          itemCount: 5,
+          ratingWidget: RatingWidget(
+              full: const Icon(Icons.star, color: Colors.amber),
+              half: const Icon(Icons.star_half, color: Colors.amber),
+              empty: const Icon(
+                Icons.star_outline_outlined,
+                color: Color.fromARGB(255, 209, 203, 203),
+              )),
+          onRatingUpdate: (rate) {},
+        )
+        // EvaluationStar(activity.evaluation),
+      ],
+    );
+  }
+
+  Widget _agentDetails(Agent agent, Vehicle vehicle) {
+    int vehicleColor = int.parse(
+      '0xFF${vehicle.color.toString().replaceFirst('#', '')}',
+    );
+
+    return IntrinsicHeight(
+      child: Row(
+        children: [
+          Column(
+            children: [
+              Text(agent.typeName),
+              const Text('Responsável'),
+              const SizedBox(
+                height: 10,
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(25.0),
+                child: CachedNetworkImage(
+                    fit: BoxFit.cover,
+                    width: 50,
+                    height: 50,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.person_off_outlined),
+                    imageUrl: activity.agent.avatar!),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      vehicle.icon,
+                      color: Color(vehicleColor),
+                      size: 70,
+                    ),
+                    Column(
+                      children: [
+                        Text('${vehicle.brand} - ${vehicle.model}'),
+                        Row(
+                          children: [
+                            Text('Placa: ${vehicle.plate}, Cor: '),
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Container(
+                                color: Color(vehicleColor),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

@@ -28,4 +28,14 @@ class Agent {
         type: _agentTypeToEnum(map['type']['tipo']),
         );
   }
+
+  String get typeName {
+    switch(type){
+      case AgentType.motoblack: return 'Motoblack';
+      case AgentType.driver: return 'Motorista';
+      default: return '';
+    }
+  }
+
+
 }
