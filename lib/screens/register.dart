@@ -19,7 +19,7 @@ class _RegisterState extends State<Register> {
         body: Center(
       child: InAppWebView(
         initialUrlRequest: URLRequest(
-          url: Uri.parse("${ApiClient.instance.baseUrl}/register"),
+          url: Uri.parse("${ApiClient.instance.baseUrl}/register?type=P"),
         ),
         initialOptions: InAppWebViewGroupOptions(
           crossPlatform: InAppWebViewOptions(clearCache: true),
@@ -32,7 +32,7 @@ class _RegisterState extends State<Register> {
             FToast().init(context).showToast(
                 child: MyToast(
                   msg: const Text(
-                    'Cadastro efetuado com sucesso!',
+                    'Cadastro efetuado com sucesso! Bastar fazer o login.',
                     style: TextStyle(
                       color: Colors.white,
                     ),
@@ -44,7 +44,7 @@ class _RegisterState extends State<Register> {
                   color: Colors.greenAccent,
                 ),
                 gravity: ToastGravity.BOTTOM,
-                toastDuration: const Duration(seconds: 2));
+                toastDuration: const Duration(seconds: 4));
           }
         },
       ),

@@ -14,6 +14,7 @@ var kTheme = ThemeData.dark().copyWith(
     seedColor: const Color.fromARGB(211, 0, 0, 0),
     brightness: Brightness.dark,
     surface: const Color.fromARGB(255, 197, 179, 88),
+    primary: const Color.fromRGBO(255, 193, 7, 1)
   ),
   scaffoldBackgroundColor: const Color.fromARGB(255, 3, 3, 3),
   textTheme: GoogleFonts.latoTextTheme(),

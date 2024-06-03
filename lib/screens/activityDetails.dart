@@ -220,18 +220,18 @@ class ActivityDetails extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(25.0),
-                child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    width: 50,
-                    height: 50,
-                    placeholder: (context, url) =>
-                        const CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.person_off_outlined),
-                    imageUrl: activity.agent.avatar!),
-              ),
+              // ClipRRect(
+              //   borderRadius: BorderRadius.circular(25.0),
+              //   child: CachedNetworkImage(
+              //       fit: BoxFit.cover,
+              //       width: 50,
+              //       height: 50,
+              //       placeholder: (context, url) =>
+              //           const CircularProgressIndicator(),
+              //       errorWidget: (context, url, error) =>
+              //           const Icon(Icons.person_off_outlined),
+              //       imageUrl: activity.agent.avatar!),
+              // ),
             ],
           ),
           SizedBox(

@@ -1,4 +1,5 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
@@ -25,7 +26,7 @@ class MyToast extends StatelessWidget{
             const SizedBox(
             width: 12.0,
             ),
-            msg,
+            Flexible(child: msg),
         ],
         ),
     );
