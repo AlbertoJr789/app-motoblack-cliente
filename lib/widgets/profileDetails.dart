@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
 
@@ -6,12 +5,12 @@ import 'package:app_motoblack_cliente/controllers/profileController.dart';
 import 'package:app_motoblack_cliente/util/util.dart';
 import 'package:app_motoblack_cliente/widgets/assets.dart';
 import 'package:app_motoblack_cliente/widgets/errorMessage.dart';
+import 'package:app_motoblack_cliente/widgets/phoneInput.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileDetails extends StatefulWidget {
@@ -39,7 +38,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
         _isSaving = true;
       });
       final pic = _picture is XFile ? _picture : null;
-      Map<String,dynamic> ret = await _controller.saveProfile(
+      Map<String, dynamic> ret = await _controller.saveProfile(
           _name.text, _phone.text, _email.text, pic);
       if (ret['error'] == false) {
         FToast().init(context).showToast(
@@ -61,9 +60,11 @@ class _ProfileDetailsState extends State<ProfileDetails> {
       } else {
         FToast().init(context).showToast(
             child: MyToast(
-              msg: const Text(
-                'Erro ao atualizar dados de perfil, tente novamente mais tarde.',
-                style: TextStyle(
+              msg: Text(
+                ret['status'] == 422
+                    ? ret['error']
+                    : 'Erro ao atualizar dados de perfil, tente novamente mais tarde.',
+                style: const TextStyle(
                   color: Colors.white,
                 ),
               ),
@@ -74,7 +75,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
               color: Colors.redAccent,
             ),
             gravity: ToastGravity.BOTTOM,
-            toastDuration: const Duration(seconds: 4));
+            toastDuration: const Duration(seconds: 5));
       }
       setState(() {
         _isSaving = false;
@@ -83,15 +84,12 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   }
 
   _fetchProfileData() async {
-    print('fetch');
     _profileData = await _controller.fetchProfileData();
     if (_profileData.containsKey('error')) {
-      print(_profileData);
       setState(() {
         _errorProfileData = true;
       });
     } else {
-      print(_profileData);
       _name.text = _profileData['name'];
       _phone.text = _profileData['phone'] ?? '';
       _email.text = _profileData['email'] ?? '';
@@ -102,8 +100,8 @@ class _ProfileDetailsState extends State<ProfileDetails> {
     }
   }
 
-  _takeUserPicture() async {
-    _controller.takeUserPicture().then((picture) {
+  _takeUserPicture(ImageSource source) async {
+    _controller.takeUserPicture(source).then((picture) {
       if (picture is XFile) {
         setState(() {
           _picture = picture;
@@ -123,13 +121,33 @@ class _ProfileDetailsState extends State<ProfileDetails> {
 
   Widget _cameraActionButton() => Align(
       alignment: Alignment.bottomRight,
-      child: FloatingActionButton.small(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        onPressed: _takeUserPicture,
-        child: const Icon(
-          Icons.camera_alt,
-          color: Colors.white,
+      child: PopupMenuButton(
+        icon: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            color: Theme.of(context).colorScheme.primary,
+            boxShadow: [BoxShadow(color: Colors.white,spreadRadius: 0.5,blurRadius: 0.5)]
+          ),
+          padding: const EdgeInsets.all(8.0),
+          child: const Icon(
+            Icons.camera_alt,
+            color: Colors.white,
+          ),
         ),
+        tooltip: "Alterar Foto",
+        itemBuilder: (context) => [
+          const PopupMenuItem(
+            value: ImageSource.camera,
+            child: Text('Tirar Foto'),
+          ),
+          const PopupMenuItem(
+            value: ImageSource.gallery,
+            child: Text('Obter da Galeria'),
+          ),
+        ],
+        onSelected: (value){
+          _takeUserPicture(value);
+        },
       ));
 
   @override
@@ -163,13 +181,14 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             ),
                             child: _picture is XFile
                                 ? CircleAvatar(
-                                    backgroundImage: FileImage(File(_picture.path)),
+                                    backgroundImage:
+                                        FileImage(File(_picture.path)),
                                   )
                                 : CachedNetworkImage(
                                     imageBuilder: (context, imageProvider) =>
                                         CircleAvatar(
-                                            backgroundImage: imageProvider,
-                                          ),
+                                          backgroundImage: imageProvider,
+                                        ),
                                     placeholder: (context, url) =>
                                         const CircularProgressIndicator(),
                                     errorWidget: (context, url, error) {
@@ -213,6 +232,11 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           ),
                           TextFormField(
                             controller: _name,
+                            validator: (value) {
+                              if (value == null || value.isEmpty)
+                                return 'Nome não pode estar vazio';
+                              return null;
+                            },
                           ),
                         ],
                       ),
@@ -238,9 +262,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           const SizedBox(
                             height: 4,
                           ),
-                          TextFormField(
-                            controller: _phone,
-                          ),
+                          PhoneInput(controller: _phone)
                         ],
                       ),
                     ),
@@ -279,17 +301,27 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           width: MediaQuery.of(context).size.width * 0.4,
                           height: MediaQuery.of(context).size.height * 0.07,
                           child: ElevatedButton.icon(
-                            onPressed: () {
-                              _saveProfile(context);
-                            },
+                            onPressed: !_isSaving
+                                ? () {
+                                    _saveProfile(context);
+                                  }
+                                : null,
                             icon: const Icon(
                               Icons.save,
                               color: Colors.white,
                             ),
-                            label: const Text(
-                              "Salvar",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            label: !_isSaving
+                                ? const Text(
+                                    'Salvar',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
+                                  )
+                                : const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
+                                    ),
+                                  ),
                           ),
                         ),
                       ),

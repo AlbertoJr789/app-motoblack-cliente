@@ -15,11 +15,13 @@ class _ErrorMessageState extends State<ErrorMessage> {
 
   @override
   Widget build(BuildContext context) {
+    print('_isLoading');
+    print(_isLoading);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/pics/error.png',color: Colors.white,width: 240,),    
+          Image.asset('assets/pics/error.png',color: const Color.fromARGB(155, 255, 255, 255),width: 240,),    
           Text(
             widget.msg,
             style: Theme.of(context)
@@ -28,12 +30,15 @@ class _ErrorMessageState extends State<ErrorMessage> {
                 .copyWith(color: Colors.white60),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 20,),
           ElevatedButton(
               onPressed: !_isLoading ? () {
                 setState(() {
                   _isLoading = true;
                 });
+                print('try again');
                 widget.tryAgainAction();
+                print('cabou try again');
                 setState(() {
                   _isLoading = false;
                 });

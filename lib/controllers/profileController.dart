@@ -51,19 +51,19 @@ class ProfileController {
         ),
         data: data,
       );
-      print(response);
       if (response.data['success']) {
         return {"error": false};
       } else {
-        return {"error": response.data['message']};
+        return {"error": response.data['message'],"status": response.statusCode};
       }
+    } on DioException catch (e) {
+      return {"error": e.response!.data['message'],"status": e.response!.statusCode};
     } catch (e) {
-      print(e.toString());
-      return {"error": e.toString()};
+      return {"error": e.toString(),"status": 500};
     }
   }
 
-  Future<dynamic> takeUserPicture() async {
+  Future<dynamic> takeUserPicture(ImageSource source) async {
       try {
 
           Map<Permission,PermissionStatus> statuses = await [
@@ -80,9 +80,8 @@ class ProfileController {
           }
 
           if(erro.isNotEmpty) throw erro;
-          return await ImagePicker().pickImage(source: ImageSource.camera);
+          return await ImagePicker().pickImage(source: source,imageQuality: 50);
       } catch (e) {
-        print('cai catch');
         return Future.error(e.toString());
       }
   }
