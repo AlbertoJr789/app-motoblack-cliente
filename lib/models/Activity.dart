@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 
 enum ActivityType { delivery, trip, unknown }
 
-ActivityType _activityTypeToEnum(int type) {
+ActivityType activityTypeToEnum(int type) {
   switch (type) {
     case 1:
       return ActivityType.trip;
@@ -54,7 +54,7 @@ class Activity {
   factory Activity.fromMap(Map<String, dynamic> map) {
     return Activity(
         id: map['id'],
-        type: _activityTypeToEnum(map['type']['tipo']),
+        type: activityTypeToEnum(map['type']['tipo']),
         agent: Agent.fromMap(map['agent']),
         vehicle: Vehicle.fromMap(map['vehicle']),
         origin: Address.fromMap(map['origin']),
@@ -78,18 +78,48 @@ class Activity {
   }
 
   static getActivities(int page) async {
-    String? token = await apiClient.token;
     return await apiClient.dio.get(
         '/api/activities',
         options: Options(
           contentType: Headers.jsonContentType,
           headers: {
             'accept': 'application/json',
-            'Authorization': "Bearer $token"
           },
         ),
         queryParameters: {'page': page},
       );
+  }
+
+  initActivity(Map<String,double> latitude,Map<String,double> longitude,ActivityType type) async {
+      try {
+        String? token = await apiClient.token;
+        // FormData data = FormData.fromMap({
+        //   'name': name,
+        //   'phone': phone,
+        //   'email': email,
+        //   'photo': picture != null ? await MultipartFile.fromFile(picture.path) : null
+        // });
+        // Response response = await apiClient.dio.post(
+        //   '/api/updateProfile',
+        //   options: Options(
+        //     contentType: Headers.multipartFormDataContentType,
+        //     headers: {
+        //       'accept': 'application/json',
+        //       'Authorization': "Bearer $token"
+        //     },
+        //   ),
+        //   data: data,
+        // );
+        // if (response.data['success']) {
+        //   return {"error": false};
+        // } else {
+        //   return {"error": response.data['message'],"status": response.statusCode};
+        // }
+    } on DioException catch (e) {
+      return {"error": e.response!.data['message'],"status": e.response!.statusCode};
+    } catch (e) {
+      return {"error": e.toString(),"status": 500};
+    }
   }
 
 

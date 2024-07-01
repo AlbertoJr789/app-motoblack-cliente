@@ -31,6 +31,19 @@ class ActivityController extends ChangeNotifier {
     notifyListeners();
   }
 
+    initActivity(Map<String,double> latitude,Map<String,double> longitude,ActivityType type){
+
+      try {
+          
+      } catch (e) {
+        
+      }
+      
+    
+    }
+
+
+
   bool get hasMore => _hasMore;
 
 }

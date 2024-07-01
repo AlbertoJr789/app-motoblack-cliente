@@ -5,6 +5,7 @@ import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/screens/activityDetails.dart';
 import 'package:app_motoblack_cliente/widgets/FloatingLoader.dart';
 import 'package:app_motoblack_cliente/widgets/activityCard.dart';
+import 'package:app_motoblack_cliente/widgets/errorMessage.dart';
 import 'package:app_motoblack_cliente/widgets/textBadge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,13 +46,25 @@ class _ActivitiesState extends State<Activities> {
   @override
   Widget build(BuildContext context) {
     controller = context.watch<ActivityController>();
+    var message;
+
+    if(controller.error.isNotEmpty){
+        message = ErrorMessage(msg: 'Houve um erro ao tentar obter suas atividades', tryAgainAction: controller.getActivities);
+    }else{
+      if(controller.activities.isEmpty){
+        message = ErrorMessage(msg: 'Você ainda não realizou nenhuma atividade.\nFaça sua primeira corrida!',icon: const Icon(Icons.notes,size: 128,color: Colors.white60,),);
+      }else{
+        message = null;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Atividades mais recentes'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
-        child: Stack(
+        child: message ?? Stack(
           children: [
             ListView.builder(
                 controller: _scrollController,

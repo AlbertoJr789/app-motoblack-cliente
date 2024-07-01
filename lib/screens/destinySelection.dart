@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:app_motoblack_cliente/controllers/activityController.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import '../util/util.dart';
+import '../models/Activity.dart';
 
 class DestinySelection extends StatefulWidget {
   DestinySelection({super.key});
@@ -27,6 +29,7 @@ class _DestinySelectionState extends State<DestinySelection> {
   GoogleMapController? _mapController;
   Map<String, double>? _originPosition;
   Map<String, double>? _destinyPosition;
+  ActivityController _controller = ActivityController();
   final _formKey = GlobalKey<FormState>();
 
   Future<Position> _getUserLocation() async {
@@ -112,6 +115,21 @@ class _DestinySelectionState extends State<DestinySelection> {
       _selectingOrigin = true;
       _selectingDestiny = false;
     });
+  }
+
+  void _initTrip(BuildContext context) async {
+    
+    if (_formKey.currentState!.validate()) {
+
+        await _controller.initActivity(_originPosition!,_destinyPosition!,activityTypeToEnum(3));
+
+        if(context.mounted){
+          Navigator.pop(context, {
+            "origin": _originPosition,
+            "destiny": _destinyPosition
+          });
+        }
+      }
   }
 
   @override
@@ -219,15 +237,10 @@ class _DestinySelectionState extends State<DestinySelection> {
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.7,
+                    width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.pop(context, {
-                            "origin": _originPosition,
-                            "destiny": _destinyPosition
-                          });
-                        }
+                        _initTrip(context);
                       },
                       child: const Text(
                         'Partiu!',

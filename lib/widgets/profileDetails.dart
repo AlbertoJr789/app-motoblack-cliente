@@ -124,9 +124,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
       child: PopupMenuButton(
         icon: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            borderRadius: const BorderRadius.all(Radius.circular(8.0)),
             color: Theme.of(context).colorScheme.primary,
-            boxShadow: [BoxShadow(color: Colors.white,spreadRadius: 0.5,blurRadius: 0.5)]
+            boxShadow: const [BoxShadow(color: Colors.white,spreadRadius: 0.5,blurRadius: 0.5)]
           ),
           padding: const EdgeInsets.all(8.0),
           child: const Icon(
