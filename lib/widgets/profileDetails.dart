@@ -298,7 +298,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                       child: Center(
                         // width: double.infinity,
                         child: Container(
-                          width: MediaQuery.of(context).size.width * 0.4,
+                          width: MediaQuery.of(context). size .width * 0.4,
                           height: MediaQuery.of(context).size.height * 0.07,
                           child: ElevatedButton.icon(
                             onPressed: !_isSaving

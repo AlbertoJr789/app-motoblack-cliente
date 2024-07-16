@@ -1,10 +1,10 @@
 class Address {
   double? latitude;
   double? longitude;
-  String zipCode;
-  String street;
-  String number;
-  String neighborhood;
+  String? zipCode;
+  String? street;
+  String? number;
+  String? neighborhood;
   String? complement;
   String? country;
   String? state;
@@ -13,16 +13,16 @@ class Address {
   Address(
       {this.latitude,
       this.longitude,
-      required this.street,
-      required this.zipCode,
-      required this.number,
-      required this.neighborhood,
+      this.street,
+      this.zipCode,
+      this.number,
+      this.neighborhood,
       this.complement,
       this.country,
       this.state,
       this.city});
 
-  factory Address.fromMap(Map<String, dynamic> map) {
+  factory Address.fromJson(Map<String, dynamic> map) {
     return Address(
         latitude: double.parse(map['latitude']),
         longitude: double.parse(map['longitude']),
@@ -35,4 +35,34 @@ class Address {
         state: map['state'],
         city: map['city']);
   }
+
+  Map<String, dynamic> toMap() {
+    final Map<String, dynamic> data = {};
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['zipCode'] = zipCode;
+    data['street'] = street;
+    data['number'] = number;
+    data['neighborhood'] = neighborhood;
+    data['complement'] = complement;
+    data['country'] = country;
+    data['state'] = state;
+    data['city'] = city;
+    return data;
+  }
+
+  String get formattedAddress => "$street, $Number - $city/$state";
+
+  String get Number => number ?? 'S/N';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Address && formattedAddress == other.formattedAddress;
+
+  @override
+  String toString() {
+    return formattedAddress;
+  }
+
 }

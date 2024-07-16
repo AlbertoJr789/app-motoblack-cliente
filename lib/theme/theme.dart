@@ -9,6 +9,7 @@ var kTheme = ThemeData.dark().copyWith(
   textSelectionTheme: const TextSelectionThemeData(
     cursorColor: Colors.black87,
     selectionHandleColor: const Color.fromARGB(255, 197, 179, 88),
+    selectionColor: Colors.white
   ),
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color.fromARGB(211, 0, 0, 0),
@@ -59,6 +60,7 @@ var kTheme = ThemeData.dark().copyWith(
     ),
     hintStyle: TextStyle(color: Color.fromARGB(211, 0, 0, 0), fontSize: 18),
     iconColor: Color.fromARGB(211, 0, 0, 0),
+    suffixIconColor: Color.fromARGB(211, 0, 0, 0),
     prefixIconColor: Color.fromARGB(211, 0, 0, 0),
   ),
   primaryColor: const Color.fromARGB(255, 197, 179, 88),

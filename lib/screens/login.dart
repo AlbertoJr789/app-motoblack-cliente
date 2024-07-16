@@ -62,12 +62,16 @@ class _LoginState extends State<Login> {
               TextFormField(
                 controller: _user,
                 decoration: const InputDecoration(
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
                   label: Text(
                     'Digite seu e-mail ou nome de usuário',
                     style: TextStyle(
                       decoration: TextDecoration.none,
                       fontSize: 14,
                     ),
+
+                    
+
                   ),
                 ),
                 validator: (value) {
@@ -97,7 +101,7 @@ class _LoginState extends State<Login> {
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
-                      value.trim().length <= 8) {
+                      value.trim().length < 8) {
                     return 'Digite uma senha válida com pelo menos 8 caracteres';
                   }
                   return null;

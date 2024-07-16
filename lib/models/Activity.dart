@@ -20,12 +20,12 @@ ActivityType activityTypeToEnum(int type) {
 class Activity {
   int id;
   ActivityType type;
-  Agent agent;
-  Vehicle vehicle;
+  Agent? agent;
+  Vehicle? vehicle;
   Address origin;
   Address destiny;
-  double price;
-  int evaluation;
+  double? price;
+  int? evaluation;
   String? obs;
   String? route;
   bool canceled;
@@ -51,22 +51,23 @@ class Activity {
       required this.createdAt,
       this.finishedAt});
 
-  factory Activity.fromMap(Map<String, dynamic> map) {
+  factory Activity.fromJson(Map<String, dynamic> map) {
     return Activity(
         id: map['id'],
         type: activityTypeToEnum(map['type']['tipo']),
-        agent: Agent.fromMap(map['agent']),
-        vehicle: Vehicle.fromMap(map['vehicle']),
-        origin: Address.fromMap(map['origin']),
-        destiny: Address.fromMap(map['destiny']),
-        price: double.parse(map['price'].toString()),
+        agent: map['agent'] != null ? Agent.fromJson(map['agent']) : null,
+        vehicle: map['vehicle'] != null ? Vehicle.fromJson(map['vehicle']) : null,
+        origin: Address.fromJson(map['origin']),
+        destiny: Address.fromJson(map['destiny']),
+        price: map['price'] != null ? double.parse(map['price'].toString()) : null,
         evaluation: map['passengerEvaluation'],
         route: map['route'],
         canceled: map['cancelled'] == 1 ? true : false,
         obs: map['passengerObs'],
         cancellingReason: map['cancellingReason'],
         createdAt: DateTime.parse(map['createdAt']),
-        finishedAt: DateTime.parse(map['finishedAt']));
+        finishedAt: map['finishedAt'] != null ? DateTime.parse(map['finishedAt']) : null
+        );
   }
 
   String get typeName {
@@ -77,9 +78,9 @@ class Activity {
     }
   }
 
-  static getActivities(int page) async {
+  static Future<Response> getActivities(int page) async {
     return await apiClient.dio.get(
-        '/api/activities',
+        '/api/activity',
         options: Options(
           contentType: Headers.jsonContentType,
           headers: {
@@ -90,36 +91,17 @@ class Activity {
       );
   }
 
-  initActivity(Map<String,double> latitude,Map<String,double> longitude,ActivityType type) async {
-      try {
-        String? token = await apiClient.token;
-        // FormData data = FormData.fromMap({
-        //   'name': name,
-        //   'phone': phone,
-        //   'email': email,
-        //   'photo': picture != null ? await MultipartFile.fromFile(picture.path) : null
-        // });
-        // Response response = await apiClient.dio.post(
-        //   '/api/updateProfile',
-        //   options: Options(
-        //     contentType: Headers.multipartFormDataContentType,
-        //     headers: {
-        //       'accept': 'application/json',
-        //       'Authorization': "Bearer $token"
-        //     },
-        //   ),
-        //   data: data,
-        // );
-        // if (response.data['success']) {
-        //   return {"error": false};
-        // } else {
-        //   return {"error": response.data['message'],"status": response.statusCode};
-        // }
-    } on DioException catch (e) {
-      return {"error": e.response!.data['message'],"status": e.response!.statusCode};
-    } catch (e) {
-      return {"error": e.toString(),"status": 500};
-    }
+  static Future<Response> initActivity(FormData data) async {
+    return await apiClient.dio.post(
+        '/api/activity',
+        options: Options(
+          contentType: Headers.jsonContentType,
+          headers: {
+            'accept': 'application/json',
+          },
+        ),
+        data: data,
+      );
   }
 
 

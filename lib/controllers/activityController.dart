@@ -1,5 +1,5 @@
-import 'package:app_motoblack_cliente/controllers/apiClient.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
+import 'package:app_motoblack_cliente/models/Address.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class ActivityController extends ChangeNotifier {
         _hasMore = response.data['data']['hasMore'];
         _page++;
         for (var i = 0; i < data.length; i++) {
-          activities.add(Activity.fromMap(data[i]));
+          activities.add(Activity.fromJson(data[i]));
         }
       } else {
         _page = 1;
@@ -31,19 +31,26 @@ class ActivityController extends ChangeNotifier {
     notifyListeners();
   }
 
-    initActivity(Map<String,double> latitude,Map<String,double> longitude,ActivityType type){
-
+  Future<Map<String,dynamic>> initActivity(Address origin,Address destiny,int type) async {
       try {
-          
+        FormData data = FormData.fromMap({
+          'origin': origin.toMap(),
+          'destiny': destiny.toMap(),
+          'type': type,
+        });
+        Response response = await Activity.initActivity(data);
+        if (response.data['success']) {
+          return {"error": false,"activity": Activity.fromJson(response.data['data'])};
+        } else {
+          return {"error": response.data['data'],"status": response.statusCode};
+        }
+      } on DioException catch (e) {
+        return {"error": e.response!.data['message'],"status": e.response!.statusCode};
       } catch (e) {
-        
+        return {"error": e.toString(),"status": 500};
       }
-      
-    
-    }
-
-
-
+  }
+  
   bool get hasMore => _hasMore;
 
 }

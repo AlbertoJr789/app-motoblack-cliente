@@ -10,14 +10,12 @@ class ProfileController {
 
   Future<Map<String,dynamic>> fetchProfileData() async {
     try {
-      String? token = await apiClient.token;
       Response response = await apiClient.dio.get(
         '/api/profileData',
         options: Options(
           contentType: Headers.jsonContentType,
           headers: {
             'accept': 'application/json',
-            'Authorization': "Bearer $token"
           },
         ),
       );
@@ -33,7 +31,6 @@ class ProfileController {
 
   Future<Map<String,dynamic>> saveProfile(String name,String phone,String email,XFile? picture) async {
     try {
-      String? token = await apiClient.token;
       FormData data = FormData.fromMap({
         'name': name,
         'phone': phone,
@@ -46,7 +43,6 @@ class ProfileController {
           contentType: Headers.multipartFormDataContentType,
           headers: {
             'accept': 'application/json',
-            'Authorization': "Bearer $token"
           },
         ),
         data: data,
@@ -72,11 +68,11 @@ class ProfileController {
           ].request();
           String erro = '';
           if(statuses[Permission.camera] != PermissionStatus.granted){
-            erro += 'O acesso a câmera foi bloqueado!\n';
+            erro += 'O acesso à câmera foi bloqueado!\n';
           }
 
           if(statuses[Permission.photos] != PermissionStatus.granted){
-            erro += 'O acesso a galeria foi bloqueado!\n';
+            erro += 'O acesso à galeria foi bloqueado!\n';
           }
 
           if(erro.isNotEmpty) throw erro;

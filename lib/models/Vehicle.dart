@@ -30,7 +30,7 @@ class Vehicle {
       required this.color,
       this.picture});
 
-  factory Vehicle.fromMap(Map<String, dynamic> map) {
+  factory Vehicle.fromJson(Map<String, dynamic> map) {
     return Vehicle(
         type: _vehicleTypeToEnum(map['type']['tipo']),
         plate: map['plate'],

@@ -14,7 +14,11 @@ class Main extends StatefulWidget {
 
 class _MainState extends State<Main> {
   int _pageIndex = 0;
-  List<Widget> pages = [Home(), const Activities(), const Profile()];
+  List<Widget> pages = [
+        Home(), 
+        const Activities(), 
+        const Profile()
+        ];
 
   void _selectPage(int index) async {
     setState(() {

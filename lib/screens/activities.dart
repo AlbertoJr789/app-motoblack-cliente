@@ -78,6 +78,7 @@ class _ActivitiesState extends State<Activities> {
     );
   }
 
+
   @override
   void dispose() {
     _scrollController.dispose();

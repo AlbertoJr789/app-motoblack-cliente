@@ -21,7 +21,7 @@ class Agent {
 
   Agent({required this.name, required this.type, this.currentLocation, this.avatar});
 
-  factory Agent.fromMap(Map<String, dynamic> map) {
+  factory Agent.fromJson(Map<String, dynamic> map) {
     return Agent(
         name: map['name'],
         avatar: map['avatar'], 

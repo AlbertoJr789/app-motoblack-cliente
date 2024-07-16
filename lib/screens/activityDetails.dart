@@ -144,7 +144,8 @@ class ActivityDetails extends StatelessWidget {
                       const SizedBox(
                         height: 10,
                       ),
-                      _agentDetails(activity.agent, activity.vehicle),
+                      if(activity.agent != null && activity.vehicle != null)
+                        _agentDetails(activity.agent!, activity.vehicle!),
                       const SizedBox(
                         height: 10,
                       ),
@@ -220,18 +221,18 @@ class ActivityDetails extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              // ClipRRect(
-              //   borderRadius: BorderRadius.circular(25.0),
-              //   child: CachedNetworkImage(
-              //       fit: BoxFit.cover,
-              //       width: 50,
-              //       height: 50,
-              //       placeholder: (context, url) =>
-              //           const CircularProgressIndicator(),
-              //       errorWidget: (context, url, error) =>
-              //           const Icon(Icons.person_off_outlined),
-              //       imageUrl: activity.agent.avatar!),
-              // ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(25.0),
+                child: CachedNetworkImage(
+                    fit: BoxFit.cover,
+                    width: 50,
+                    height: 50,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.person_off_outlined,color: Colors.black,),
+                    imageUrl: agent.avatar!),
+              ),
             ],
           ),
           SizedBox(

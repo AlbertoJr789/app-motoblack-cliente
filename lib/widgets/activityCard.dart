@@ -55,19 +55,20 @@ class ActivityCard extends StatelessWidget {
                     ]),
               ),
               const Expanded(child: SizedBox()),
-              // ClipRRect(
-              //   borderRadius: BorderRadius.circular(25.0),
-              //   child: CachedNetworkImage(
-              //       fit: BoxFit.cover,
-              //       width: 50,
-              //       height: 50,
-              //       placeholder: (context, url) =>
-              //           const CircularProgressIndicator(),
-              //       errorWidget: (context, url, error) {
-              //           return const Icon(Icons.person_off_outlined);
-              //       },
-              //       imageUrl: activity.agent.avatar!),
-              // ),
+              if(activity.agent != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(25.0),
+                  child: CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      width: 50,
+                      height: 50,
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) {
+                          return const Icon(Icons.person_off_outlined);
+                      },
+                      imageUrl: activity.agent!.avatar!),
+                ),
               // CircleAvatar(
               //   radius: 30,
               //   backgroundColor: const Color.fromARGB(255, 32, 39, 44),

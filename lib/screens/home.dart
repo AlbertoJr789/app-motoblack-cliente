@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/screens/destinySelection.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -135,7 +136,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         _driveRes = await Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (ctx) => DestinySelection()));
-                        if (_driveRes != null) {
+                        if (_driveRes is Activity) {
                           setState(() {
                             _driveMode = true;
                           });
@@ -145,6 +146,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           hintText: 'Vai pra onde?',
                           prefixIcon: Icon(Icons.search),
                           iconColor: Colors.black),
+                          readOnly: true,
                     ),
             ),
             const SizedBox(
@@ -154,8 +156,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               child: _driveMode
                   ? GoogleMap(
                       initialCameraPosition: CameraPosition(
-                          target: LatLng(_driveRes['origin']['lat'],
-                              _driveRes['origin']['lon']),
+                          target: LatLng(_driveRes.origin.latitude,
+                              _driveRes.origin.longitude),
                           zoom: 16),
                     )
                   : Container(),
