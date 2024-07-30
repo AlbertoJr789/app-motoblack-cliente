@@ -14,8 +14,7 @@ abstract class Geocoder {
 
 
 }
-  // latitude = -20.461858529051117;
-  // longitude = -45.43592934890276;
+
 class GeoCoderController {
 
   Geocoder? geocoder;

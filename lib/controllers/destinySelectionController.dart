@@ -65,5 +65,10 @@ class DestinySelectionController {
     }
   }
 
+  //TODO
+  void storeSuggestion(Address address) async {
+      
+  }
+
 
 }

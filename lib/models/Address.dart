@@ -51,8 +51,14 @@ class Address {
     return data;
   }
 
-  String get formattedAddress => "$street, $Number - $city/$state";
-
+  String get formattedAddress {
+    if(number != null){
+      return "$street, $Number - $city/$state";
+    }else{
+      return "$street - $city/$state";
+    }
+  }
+  
   String get Number => number ?? 'S/N';
 
   @override

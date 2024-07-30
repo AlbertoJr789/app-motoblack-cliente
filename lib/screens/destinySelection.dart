@@ -13,6 +13,11 @@ class DestinySelection extends StatefulWidget {
 
   final TextEditingController origin = TextEditingController();
   final TextEditingController destiny = TextEditingController();
+  
+  //vallidation control
+  final originKey = GlobalKey<FormFieldState<String>>();
+  final destinyKey = GlobalKey<FormFieldState<String>>();
+
   final FocusNode originfocusNode = FocusNode();
   final FocusNode destinyfocusNode = FocusNode();
   bool firstAddress = true;
@@ -27,6 +32,7 @@ class _DestinySelectionState extends State<DestinySelection> {
 
   //map address flags
   bool _gettingAddress = false;
+  bool _autoFill = true;
   bool _selectingOrigin = false;
   bool _selectingDestiny = true;
 
@@ -73,13 +79,19 @@ class _DestinySelectionState extends State<DestinySelection> {
       _selectingOrigin = true;
       _selectingDestiny = false;
     });
+    widget.originfocusNode.addListener(() {
+      setState(() {});
+    });
+    widget.destinyfocusNode.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Iniciar corrida'),
+        title: const Text('Iniciar corrida'),
       ),
       body: Column(
         children: [
@@ -94,203 +106,284 @@ class _DestinySelectionState extends State<DestinySelection> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Container(
-                          height: 70,
-                          child: LayoutBuilder(builder: (context, constraints) {
-                            return RawAutocomplete<Address>(
-                              textEditingController: widget.origin,
-                              focusNode: widget.originfocusNode,
-                              optionsBuilder: (controller) async {
-                                if (controller.text.isEmpty ||
-                                    !_showAutocomplete) {
-                                  return [];
-                                }
-                                _showAutocomplete = false;
-                                setState(() {
-                                  _searchingOrigin = true;
-                                });
-                                final suggestions = await _getAutocompleteSuggestions(
-                                    controller.text);
-                                setState(() {
-                                  _searchingOrigin = false;
-                                });
-                                return suggestions;
-                              },
-                              optionsViewBuilder: (BuildContext context,
-                                  AutocompleteOnSelected<Address> onSelected,
-                                  Iterable<Address> options) {
-                                final scrollController = ScrollController();
-                                return Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Material(
-                                      elevation: 4.0,
-                                      child: Container(
-                                        height: MediaQuery.of(context).size.height * 0.2,
-                                        width: constraints.biggest.width,
-                                        child: Scrollbar(
-                                          thumbVisibility: true,
+                        LayoutBuilder(builder: (context, constraints) {
+                          return RawAutocomplete<Address>(
+                            textEditingController: widget.origin,
+                            focusNode: widget.originfocusNode,
+                            optionsBuilder: (controller) async {
+                              if (controller.text.isEmpty ||
+                                  !_showAutocomplete) {
+                                return [];
+                              }
+                              _showAutocomplete = false;
+                              setState(() {
+                                _searchingOrigin = true;
+                              });
+                              final suggestions =
+                                  await _getAutocompleteSuggestions(
+                                      controller.text);
+                              setState(() {
+                                _searchingOrigin = false;
+                              });
+                              return suggestions;
+                            },
+                            optionsViewBuilder: (BuildContext context,
+                                AutocompleteOnSelected<Address> onSelected,
+                                Iterable<Address> options) {
+                              final scrollController = ScrollController();
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                    elevation: 4.0,
+                                    child: SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.2,
+                                      width: constraints.biggest.width,
+                                      child: Scrollbar(
+                                        thumbVisibility: true,
+                                        controller: scrollController,
+                                        child: ListView(
                                           controller: scrollController,
-                                          child: ListView(
-                                            controller: scrollController,
-                                            children:
-                                                options.map((Address option) {
-                                              return Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 4.0),
-                                                child: ListTile(
-                                                  title: Text(
-                                                      option.formattedAddress),
-                                                  onTap: () {
-                                                    _originPosition = option;
-                                                    onSelected(option);
-                                                  },
-                                                ),
-                                              );
-                                            }).toList(),
-                                          ),
+                                          children:
+                                              options.map((Address option) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 4.0),
+                                              child: ListTile(
+                                                title: Text(
+                                                    option.formattedAddress),
+                                                onTap: () {
+                                                  _originPosition = option;
+                                                  _gettingAddress = false;
+                                                  onSelected(option);
+                                                  widget.originKey.currentState!.validate();
+                                                  _destinySelectionController.storeSuggestion(option);
+                                                  _mapController?.animateCamera(
+                                                    CameraUpdate
+                                                        .newCameraPosition(
+                                                      CameraPosition(
+                                                        target: LatLng(
+                                                            option.latitude!,
+                                                            option.longitude!),
+                                                        zoom: 16,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          }).toList(),
                                         ),
-                                      )),
-                                );
-                              },
-                              fieldViewBuilder: (BuildContext ctx,
-                                  TextEditingController ed,
-                                  FocusNode fn,
-                                  VoidCallback ofs) {
-                                return TextFormField(
-                                  controller: ed,
-                                  focusNode: fn,
-                                  decoration: InputDecoration(
-                                    labelText: "Origem",
-                                    suffixIcon: _searchingOrigin
-                                        ? const Padding(
+                                      ),
+                                    )),
+                              );
+                            },
+                            fieldViewBuilder: (BuildContext ctx,
+                                TextEditingController ed,
+                                FocusNode fn,
+                                VoidCallback ofs) {
+                              return TextFormField(
+                                controller: ed,
+                                focusNode: fn,
+                                key: widget.originKey,
+                                decoration: InputDecoration(
+                                  hintText: "De onde ?",
+                                  labelText: "Origem",
+                                  suffixIcon: _searchingOrigin
+                                      ? const Padding(
                                           padding: EdgeInsets.all(8.0),
                                           child: CircularProgressIndicator(),
                                         )
-                                        : const Icon(Icons.search),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.black87,
-                                      ),
+                                      : InkWell(
+                                          onTap: fn.hasFocus
+                                              ? () {
+                                                  _originPosition = null;
+                                                  widget.origin.text = '';
+                                                }
+                                              : null,
+                                          child: fn.hasFocus
+                                              ? const Icon(Icons.close_rounded)
+                                              : const Icon(Icons.search),
+                                        ),
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.black87,
                                     ),
                                   ),
-                                  onTap: () {
-                                    _selectingDestiny = false;
-                                    _selectingOrigin = true;
-                                  },
-                                  onChanged: (_) {
-                                    _showAutocomplete = true;
-                                  },
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return '';
-                                    }
-                                    if (_originPosition == null)
-                                      return 'Ponto de origem inválido!';
-                                  },
-                                );
-                              },
-                            );
-                          }),
-                        ),
-                        Container(
-                          height: 70,
-                          child: LayoutBuilder(builder: (context, constraints) {
-                            return RawAutocomplete<Address>(
-                              textEditingController: widget.destiny,
-                              focusNode: widget.destinyfocusNode,
-                              optionsBuilder: (controller) async {
-                                if (controller.text.isEmpty ||
-                                    !_showAutocomplete) {
-                                  return [];
-                                }
-                                _showAutocomplete = false;
-                                setState(() {
-                                  _searchingDestiny = true;
-                                });
-                                final suggestions = await _getAutocompleteSuggestions(
-                                    controller.text);
-                                setState(() {
-                                  _searchingDestiny = false;
-                                });
-                                return suggestions;
-                              },
-                              optionsViewBuilder: (BuildContext context,
-                                  AutocompleteOnSelected<Address> onSelected,
-                                  Iterable<Address> options) {
-                                final scrollController = ScrollController();
-                                return Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Material(
-                                      elevation: 4.0,
-                                      child: Container(
-                                        height: MediaQuery.of(context).size.height * 0.2,
-                                        width: constraints.biggest.width,
-                                        child: Scrollbar(
-                                          thumbVisibility: true,
-                                          controller: scrollController,
-                                          child: ListView(
-                                            controller: scrollController,
-                                            children:
-                                                options.map((Address option) {
-                                              return Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 4.0),
-                                                child: ListTile(
-                                                  title: Text(
-                                                      option.formattedAddress),
-                                                  onTap: () {
-                                                    _destinyPosition = option;
-                                                    onSelected(option);
-                                                  },
-                                                ),
-                                              );
-                                            }).toList(),
-                                          ),
+                                ),
+                                onTap: () {
+                                  _selectingDestiny = false;
+                                  _selectingOrigin = true;
+                                  if (_originPosition != null) {
+                                    _gettingAddress = false;
+                                    _mapController?.animateCamera(
+                                      CameraUpdate.newCameraPosition(
+                                        CameraPosition(
+                                          target: LatLng(
+                                              _originPosition!.latitude!,
+                                              _originPosition!.longitude!),
+                                          zoom: 16,
                                         ),
-                                      )),
-                                );
-                              },
-                              fieldViewBuilder: (BuildContext ctx,
-                                  TextEditingController ed,
-                                  FocusNode fn,
-                                  VoidCallback ofs) {
-                                return TextFormField(
-                                  controller: ed,
-                                  focusNode: fn,
-                                  decoration: InputDecoration(
-                                    hintText: "Pra onde?",
-                                    labelText: "Destino",
-                                    suffixIcon: _searchingDestiny
-                                        ? const Padding(
+                                      ),
+                                    );
+                                  }
+                                },
+                                onChanged: (_) {
+                                  _showAutocomplete = true;
+                                },
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      _originPosition == null) {
+                                    return 'Endereço inválido!';
+                                  }
+                                  return null;
+                                },
+                              );
+                            },
+                          );
+                        }),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        LayoutBuilder(builder: (context, constraints) {
+                          return RawAutocomplete<Address>(
+                            textEditingController: widget.destiny,
+                            focusNode: widget.destinyfocusNode,
+                            optionsBuilder: (controller) async {
+                              if (controller.text.isEmpty ||
+                                  !_showAutocomplete) {
+                                return [];
+                              }
+                              _showAutocomplete = false;
+                              setState(() {
+                                _searchingDestiny = true;
+                              });
+                              final suggestions =
+                                  await _getAutocompleteSuggestions(
+                                      controller.text);
+                              setState(() {
+                                _searchingDestiny = false;
+                              });
+                              return suggestions;
+                            },
+                            optionsViewBuilder: (BuildContext context,
+                                AutocompleteOnSelected<Address> onSelected,
+                                Iterable<Address> options) {
+                              final scrollController = ScrollController();
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                    elevation: 4.0,
+                                    child: SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.2,
+                                      width: constraints.biggest.width,
+                                      child: Scrollbar(
+                                        thumbVisibility: true,
+                                        controller: scrollController,
+                                        child: ListView(
+                                          controller: scrollController,
+                                          children:
+                                              options.map((Address option) {
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 4.0),
+                                              child: ListTile(
+                                                title: Text(
+                                                    option.formattedAddress),
+                                                onTap: () {
+                                                  _destinyPosition = option;
+                                                  _gettingAddress = false;
+                                                  onSelected(option);
+                                                  _destinySelectionController.storeSuggestion(option);
+                                                  widget.destinyKey.currentState!.validate();
+                                                  _mapController?.animateCamera(
+                                                    CameraUpdate
+                                                        .newCameraPosition(
+                                                      CameraPosition(
+                                                        target: LatLng(
+                                                            option.latitude!,
+                                                            option.longitude!),
+                                                        zoom: 16,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    )),
+                              );
+                            },
+                            fieldViewBuilder: (BuildContext ctx,
+                                TextEditingController ed,
+                                FocusNode fn,
+                                VoidCallback ofs) {
+                              return TextFormField(
+                                controller: ed,
+                                focusNode: fn,
+                                key: widget.destinyKey,
+                                decoration: InputDecoration(
+                                  hintText: "Pra onde?", 
+                                  labelText: "Destino",
+                                  suffixIcon: _searchingDestiny
+                                      ? const Padding(
                                           padding: EdgeInsets.all(8.0),
                                           child: CircularProgressIndicator(),
                                         )
-                                        : const Icon(Icons.search),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Colors.black87,
-                                      ),
+                                      : InkWell(
+                                          onTap: fn.hasFocus
+                                              ? () {
+                                                  _destinyPosition = null;
+                                                  widget.destiny.text = '';
+                                                }
+                                              : null,
+                                          child: fn.hasFocus
+                                              ? const Icon(Icons.close_rounded)
+                                              : const Icon(Icons.search)),
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.black87,
                                     ),
                                   ),
-                                  onTap: () {
-                                    _selectingDestiny = true;
-                                    _selectingOrigin = false;
-                                  },
-                                  onChanged: (_) {
-                                    _showAutocomplete = true;
-                                  },
-                                  validator: (value) {
-                                    if (value == null ||
-                                        value.isEmpty ||
-                                        _destinyPosition == null) {
-                                      return '';
-                                    }
-                                  },
-                                );
-                              },
-                            );
-                          }),
-                        ),
+                                ),
+                                onTap: () {
+                                  _selectingDestiny = true;
+                                  _selectingOrigin = false;
+                                  if (_destinyPosition != null) {
+                                    _gettingAddress = false;
+                                    _mapController?.animateCamera(
+                                      CameraUpdate.newCameraPosition(
+                                        CameraPosition(
+                                          target: LatLng(
+                                              _destinyPosition!.latitude!,
+                                              _destinyPosition!.longitude!),
+                                          zoom: 16,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                onChanged: (_) {
+                                  _showAutocomplete = true;
+                                },
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      _destinyPosition == null) {
+                                    return 'Endereço inválido!';
+                                  }
+                                  return null;
+                                },
+                              );
+                            },
+                          );
+                        }),
                       ],
                     ),
                   ),
@@ -306,19 +399,55 @@ class _DestinySelectionState extends State<DestinySelection> {
                 onCameraMove: (position) {
                   _currentPosition = position;
                 },
-                onCameraMoveStarted: () {
-                  _gettingAddress = true;
-                },
+                // onCameraMoveStarted: () {
+                // _gettingAddress = true;
+                // },
                 onCameraIdle: _getAddress,
                 onMapCreated: (controller) {
                   _mapController = controller;
                 },
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Transform.translate(offset: Offset(0,-100),child: Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8.0)),
+                        color: _autoFill
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.secondary,
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Colors.white,
+                              spreadRadius: 0.5,
+                              blurRadius: 0.5)
+                        ]),
+                    // padding: const EdgeInsets.all(8.0),
+                    child: Tooltip(
+                      message: "Habilitar/Desabilitar preenchimento automático",
+                      child: IconButton(
+                          icon: Icon(
+                            _autoFill ? Icons.add_location : Icons.location_off,
+                            color: _autoFill ? Colors.black : Colors.grey,
+                            size: 24,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _autoFill = !_autoFill;
+                            });
+                          }),
+                    ),
+                  ),) 
+                ),
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
-                  child: Container(
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: _isInit ? null : _initTrip,
@@ -353,7 +482,7 @@ class _DestinySelectionState extends State<DestinySelection> {
   }
 
   void _getAddress() async {
-    if (_gettingAddress) {
+    if (_gettingAddress && _autoFill) {
       if (widget.firstAddress == false) {
         if (_selectingOrigin) {
           widget.origin.text = "Carregando...";
@@ -370,9 +499,11 @@ class _DestinySelectionState extends State<DestinySelection> {
           if (_selectingOrigin) {
             widget.origin.text = address.formattedAddress;
             _originPosition = address;
+            widget.originKey.currentState!.validate();                   
           } else if (_selectingDestiny) {
             widget.destiny.text = address.formattedAddress;
             _destinyPosition = address;
+            widget.destinyKey.currentState!.validate();           
           }
         } else {
           widget.origin.text = address.formattedAddress;
@@ -386,16 +517,14 @@ class _DestinySelectionState extends State<DestinySelection> {
             "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
             e.toString());
       });
-
-      _gettingAddress = false;
     }
+    _gettingAddress = true;
   }
 
   Future<Iterable<Address>> _getAutocompleteSuggestions(value) {
     final completer = Completer<Iterable<Address>>();
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () async {
-      print('request');
       completer
           .complete(await _destinySelectionController.getSuggestions(value));
     });
@@ -419,6 +548,7 @@ class _DestinySelectionState extends State<DestinySelection> {
         setState(() {
           _isInit = false;
         });
+
         FToast().init(context).showToast(
             child: MyToast(
               msg: Text(
@@ -445,6 +575,8 @@ class _DestinySelectionState extends State<DestinySelection> {
   void dispose() {
     widget.origin.clear();
     widget.destiny.clear();
+    widget.originfocusNode.dispose();
+    widget.destinyfocusNode.dispose();
     _debounce?.cancel();
     super.dispose();
   }
