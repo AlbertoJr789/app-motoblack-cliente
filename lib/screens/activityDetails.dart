@@ -1,11 +1,10 @@
+
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/models/Agent.dart';
 import 'package:app_motoblack_cliente/models/Vehicle.dart';
 import 'package:app_motoblack_cliente/widgets/infoBanner.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -17,27 +16,27 @@ class ActivityDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String originTime = DateFormat('dd/MM/y HH:mm').format(activity.createdAt);
+    String originTime = DateFormat('dd/MM/y HH:mm').format(activity.createdAt!);
     String addrOrigin = '${activity.origin.street} ${activity.origin.number}';
 
     String destinyTime =
         DateFormat('dd/MM/y HH:mm').format(activity.finishedAt!);
     String addrDestiny = '${activity.origin.street} ${activity.origin.number}';
 
-    final showEval, showObs;
+    final dynamic showEval, showObs;
 
-    if (activity.canceled) {
+    if (activity.canceled!) {
       showEval =
           InfoBanner(type: 'danger', msg: 'Esta atividade foi cancelada!');
       showObs = Text(
         'Justificativa de cancelamento: ${activity.cancellingReason ?? '-'}',
-        style: TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 18),
       );
     } else {
       showEval = _evaluation(activity);
       showObs = Text(
         'Observações relatadas: ${activity.obs ?? '-'}',
-        style: TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 18),
       );
     }
 
@@ -48,10 +47,10 @@ class ActivityDetails extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 245, 245, 245),
       body: Column(
         children: [
-          Container(
+          SizedBox(
             width: double.infinity,
             height: MediaQuery.of(context).size.height * 0.3,
-            child: GoogleMap(
+            child: const GoogleMap(
               initialCameraPosition: CameraPosition(
                 target: LatLng(-20.461858529051117, -45.43592934890276),
                 zoom: 12,
@@ -59,10 +58,10 @@ class ActivityDetails extends StatelessWidget {
             ),
           ),
           SingleChildScrollView(
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +92,7 @@ class ActivityDetails extends StatelessWidget {
                           Text(
                             originTime,
                             textAlign: TextAlign.start,
-                            style: TextStyle(fontSize: 14),
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ],
                       ),
@@ -119,7 +118,7 @@ class ActivityDetails extends StatelessWidget {
                             child: Text(
                               addrDestiny,
                               textAlign: TextAlign.start,
-                              style: TextStyle(fontSize: 14),
+                              style: const TextStyle(fontSize: 14),
                             ),
                           ),
                           const SizedBox(
@@ -133,7 +132,7 @@ class ActivityDetails extends StatelessWidget {
                           Text(
                             destinyTime,
                             textAlign: TextAlign.start,
-                            style: TextStyle(fontSize: 14),
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ],
                       ),

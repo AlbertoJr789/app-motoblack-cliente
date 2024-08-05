@@ -4,21 +4,23 @@ import 'package:app_motoblack_cliente/models/Agent.dart';
 import 'package:app_motoblack_cliente/models/Vehicle.dart';
 import 'package:dio/dio.dart';
 
-enum ActivityType { delivery, trip, unknown }
+enum ActivityType { delivery, trip, carTrip, unknown }
 
 ActivityType activityTypeToEnum(int type) {
   switch (type) {
     case 1:
       return ActivityType.trip;
     case 2:
+      return ActivityType.carTrip;
+    case 3:
       return ActivityType.delivery;
     default:
-      return ActivityType.unknown;
+      return  ActivityType.unknown;
   }
 }
 
 class Activity {
-  int id;
+  int? id;
   ActivityType type;
   Agent? agent;
   Vehicle? vehicle;
@@ -28,27 +30,27 @@ class Activity {
   int? evaluation;
   String? obs;
   String? route;
-  bool canceled;
+  bool? canceled;
   String? cancellingReason;
-  DateTime createdAt;
+  DateTime? createdAt;
   DateTime? finishedAt;
 
   static final ApiClient apiClient = ApiClient.instance;
 
   Activity(
-      {required this.id,
-      required this.type,
-      required this.agent,
-      required this.vehicle,
+      {this.id,
+       required this.type,
+       this.agent,
+       this.vehicle,
       required this.origin,
       required this.destiny,
-      required this.price,
-      required this.evaluation,
+       this.price,
+       this.evaluation,
       this.obs,
-      required this.canceled,
-      required this.route,
+       this.canceled,
+       this.route,
       this.cancellingReason,
-      required this.createdAt,
+       this.createdAt,
       this.finishedAt});
 
   factory Activity.fromJson(Map<String, dynamic> map) {

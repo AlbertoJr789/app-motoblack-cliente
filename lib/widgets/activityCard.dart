@@ -13,7 +13,7 @@ class ActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String title =
-        '${activity.typeName} ${DateFormat('dd/MM/y H:m').format(activity.createdAt)}';
+        '${activity.typeName} ${DateFormat('dd/MM/y H:m').format(activity.createdAt!)}';
     String addr = '${activity.origin.street} ${activity.origin.number}';
     return Material(
       color: Colors.transparent,
@@ -29,7 +29,7 @@ class ActivityCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.5,
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +37,7 @@ class ActivityCard extends StatelessWidget {
                       TextBadge(
                           msg: Text(
                         title,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       )),
                       Padding(
                         padding: const EdgeInsets.only(left: 5.0),

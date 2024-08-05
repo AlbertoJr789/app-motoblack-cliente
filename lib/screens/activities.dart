@@ -1,13 +1,8 @@
-import 'dart:io';
 
 import 'package:app_motoblack_cliente/controllers/activityController.dart';
-import 'package:app_motoblack_cliente/models/Activity.dart';
-import 'package:app_motoblack_cliente/screens/activityDetails.dart';
 import 'package:app_motoblack_cliente/widgets/FloatingLoader.dart';
 import 'package:app_motoblack_cliente/widgets/activityCard.dart';
 import 'package:app_motoblack_cliente/widgets/errorMessage.dart';
-import 'package:app_motoblack_cliente/widgets/textBadge.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -46,7 +41,7 @@ class _ActivitiesState extends State<Activities> {
   @override
   Widget build(BuildContext context) {
     controller = context.watch<ActivityController>();
-    var message;
+    dynamic message;
 
     if(controller.error.isNotEmpty){
         message = ErrorMessage(msg: 'Houve um erro ao tentar obter suas atividades', tryAgainAction: controller.getActivities);

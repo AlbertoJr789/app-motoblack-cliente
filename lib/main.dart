@@ -16,7 +16,7 @@ void main() async {
 
   //verifica se o usuário já logou
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final String? token = await prefs.getString('token');
+  final String? token = prefs.getString('token');
   runApp(MyApp(login: token != null ? false : true));
 }
 

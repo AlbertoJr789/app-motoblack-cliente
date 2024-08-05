@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:app_motoblack_cliente/controllers/profileController.dart';
 import 'package:app_motoblack_cliente/util/util.dart';
@@ -7,9 +6,7 @@ import 'package:app_motoblack_cliente/widgets/assets.dart';
 import 'package:app_motoblack_cliente/widgets/errorMessage.dart';
 import 'package:app_motoblack_cliente/widgets/phoneInput.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -27,10 +24,10 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   bool _isSaving = false;
   bool _errorProfileData = false;
 
-  TextEditingController _name = TextEditingController();
-  TextEditingController _phone = TextEditingController();
-  TextEditingController _email = TextEditingController();
-  late dynamic _picture;
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _phone = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  dynamic _picture;
 
   _saveProfile(context) async {
     if (_formKey.currentState!.validate()) {
@@ -200,9 +197,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                                         ),
                                       );
                                     },
-                                    imageUrl: _picture),
+                                    imageUrl: _picture ?? ''),
                           ),
-                          Container(
+                          SizedBox(
                               width: 128,
                               height: 128,
                               child: _cameraActionButton())
@@ -217,9 +214,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           vertical: 8.0, horizontal: 12.0),
                       child: Column(
                         children: [
-                          Container(
+                          const SizedBox(
                             width: double.infinity,
-                            child: const Text(
+                            child: Text(
                               'Nome: ',
                               style: TextStyle(
                                   fontSize: 22,
@@ -233,8 +230,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           TextFormField(
                             controller: _name,
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty){
                                 return 'Nome não pode estar vazio';
+                              }
                               return null;
                             },
                           ),
@@ -249,9 +247,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           vertical: 8.0, horizontal: 12.0),
                       child: Column(
                         children: [
-                          Container(
+                          const SizedBox(
                             width: double.infinity,
-                            child: const Text(
+                            child: Text(
                               'Telefone: ',
                               style: TextStyle(
                                   fontSize: 22,
@@ -274,9 +272,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           vertical: 8.0, horizontal: 12.0),
                       child: Column(
                         children: [
-                          Container(
+                          const SizedBox(
                             width: double.infinity,
-                            child: const Text(
+                            child:  Text(
                               'E-mail: ',
                               style: TextStyle(
                                   fontSize: 22,
@@ -297,7 +295,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                       padding: const EdgeInsets.all(8.0),
                       child: Center(
                         // width: double.infinity,
-                        child: Container(
+                        child: SizedBox(
                           width: MediaQuery.of(context). size .width * 0.4,
                           height: MediaQuery.of(context).size.height * 0.07,
                           child: ElevatedButton.icon(
