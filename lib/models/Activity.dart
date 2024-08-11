@@ -4,7 +4,7 @@ import 'package:app_motoblack_cliente/models/Agent.dart';
 import 'package:app_motoblack_cliente/models/Vehicle.dart';
 import 'package:dio/dio.dart';
 
-enum ActivityType { delivery, trip, carTrip, unknown }
+enum ActivityType { unknown, trip, carTrip, delivery }
 
 ActivityType activityTypeToEnum(int type) {
   switch (type) {
@@ -75,7 +75,17 @@ class Activity {
   String get typeName {
     switch(type){
       case ActivityType.trip: return 'Corrida';
+      case ActivityType.carTrip: return 'Corrida';
       case ActivityType.delivery: return 'Entrega';
+      default: return '';
+    }
+  }
+
+  String get agentActivityType {
+    switch(type){
+      case ActivityType.trip: return 'Moto Black';
+      case ActivityType.carTrip: return 'Motorista';
+      case ActivityType.delivery: return 'Entregador';
       default: return '';
     }
   }

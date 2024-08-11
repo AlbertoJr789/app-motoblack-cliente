@@ -1,4 +1,5 @@
 import 'package:app_motoblack_cliente/models/Address.dart';
+import 'package:app_motoblack_cliente/models/Vehicle.dart';
 
 enum AgentType { motoblack, driver, unknown }
 
@@ -14,25 +15,28 @@ AgentType _agentTypeToEnum(int type) {
 }
 
 class Agent {
+  int? id;
   String name;
-  AgentType type;
   Address? currentLocation;
   String? avatar;
+  Vehicle? vehicle;
 
-  Agent({required this.name, required this.type, this.currentLocation, this.avatar});
+  Agent({this.id,required this.name,this.currentLocation, this.avatar,this.vehicle});
 
   factory Agent.fromJson(Map<String, dynamic> map) {
     return Agent(
+        id: map['id'],
         name: map['name'],
         avatar: map['avatar'], 
-        type: _agentTypeToEnum(map['type']['tipo']),
+        vehicle: Vehicle.fromJson(map['vehicle'])
         );
   }
 
   String get typeName {
-    switch(type){
-      case AgentType.motoblack: return 'Motoblack';
-      case AgentType.driver: return 'Motorista';
+    if(vehicle == null) return '';
+    switch(vehicle!.type){
+      case VehicleType.motorcycle: return 'Motoblack';
+      case VehicleType.car: return 'Motorista';
       default: return '';
     }
   }

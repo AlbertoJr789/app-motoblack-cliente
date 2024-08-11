@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 enum VehicleType { motorcycle, car, unknown }
 
-VehicleType _vehicleTypeToEnum(int type) {
+VehicleType _vehicleTypeToEnum(type) {
   switch (type) {
     case 1:
       return VehicleType.motorcycle;
@@ -32,7 +32,7 @@ class Vehicle {
 
   factory Vehicle.fromJson(Map<String, dynamic> map) {
     return Vehicle(
-        type: _vehicleTypeToEnum(map['type']['tipo']),
+        type: _vehicleTypeToEnum(map['type']['type']),
         plate: map['plate'],
         model: map['model'],
         brand: map['brand'],

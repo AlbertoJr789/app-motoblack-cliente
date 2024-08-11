@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_motoblack_cliente/controllers/tripController.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +20,24 @@ class _TripState extends State<Trip> with TickerProviderStateMixin {
   Timer? _timer;
   late String _time;
   final Stopwatch _stopwatch = Stopwatch();
+  final TripController _controller = TripController();
+
+  @override
+  void initState() {
+    super.initState();
+    _drawAgent();
+  }
+
+  _drawAgent() {
+    _controller.drawAgent(widget.trip).then((value){
+      if(value == null && _controller.tries < 5) {
+        _drawAgent();
+      }else{
+        print('agente encontrado');
+        print(value!.name);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +45,7 @@ class _TripState extends State<Trip> with TickerProviderStateMixin {
     // _stopwatch.start();
     return Container(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.1,
+            height: MediaQuery.of(context).size.height * 0.15,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                   colors:  [
@@ -38,11 +57,14 @@ class _TripState extends State<Trip> with TickerProviderStateMixin {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    "Corrida em Andamento",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Procurando um ${widget.trip.agentActivityType} pertinho de você...",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   ElevatedButton.icon(
