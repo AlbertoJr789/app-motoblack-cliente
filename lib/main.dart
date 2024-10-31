@@ -3,6 +3,7 @@ import 'package:app_motoblack_cliente/screens/main.dart';
 import 'package:app_motoblack_cliente/theme/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/login.dart';
 
@@ -13,7 +14,7 @@ void main() async {
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  
   //verifica se o usuário já logou
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');

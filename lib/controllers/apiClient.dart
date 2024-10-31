@@ -20,7 +20,6 @@ class ApiClient {
         },
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) { //the goal is to treat 401 responses and redirect to login screen again
-            print('faz login');
               navigatorKey.currentState?.pushAndRemoveUntil(MaterialPageRoute(builder: (ctx) => Login()), (route) => false);
           }
           return handler.next(e);

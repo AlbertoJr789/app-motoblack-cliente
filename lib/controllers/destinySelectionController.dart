@@ -25,7 +25,7 @@ class DestinySelectionController {
           throw 'Permissão negada! Precisamos da sua permissão para obter sua localização automaticamente!';
       }
 
-      Position position = await Geolocator.getCurrentPosition();
+      Position position = await Geolocator.getCurrentPosition();   
       return position;
     } catch (e) {
       return Future.error(e.toString());
