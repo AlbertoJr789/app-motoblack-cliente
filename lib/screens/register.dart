@@ -16,17 +16,20 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Criar Conta'),
+      ),
         body: Center(
       child: InAppWebView(
         initialUrlRequest: URLRequest(
-          url: Uri.parse("${ApiClient.instance.baseUrl}/register?type=P"),
+          url: Uri.parse("${ApiClient.instance.baseUrl}/registerPassenger"),
         ),
         initialOptions: InAppWebViewGroupOptions(
           crossPlatform: InAppWebViewOptions(clearCache: true),
         ),
         onWebViewCreated: (controller) {},
         onUpdateVisitedHistory: (controller, url, androidIsReload) {
-          if (url.toString()[url.toString().length - 1] == '/') {
+          if (url!.path == '/login') {
             //usuario logou,redirecionado pra rota raiz
             Navigator.of(context).pop();
             FToast().init(context).showToast(
