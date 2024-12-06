@@ -38,7 +38,7 @@ class ActivityController extends ChangeNotifier {
           'destiny': destiny.toMap(),
           'type': type,
         });
-        Response response = await Activity.initActivity(data);
+        Response response = await Activity.storeActivity(data);
         if (response.data['success']) {
           return {"error": false,"activity": Activity.fromJson(response.data['data'])};
         } else {

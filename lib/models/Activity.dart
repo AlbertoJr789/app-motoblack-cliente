@@ -103,7 +103,7 @@ class Activity {
       );
   }
 
-  static Future<Response> initActivity(FormData data) async {
+  static Future<Response> storeActivity(FormData data) async {
     return await apiClient.dio.post(
         '/api/activity',
         options: Options(

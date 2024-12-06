@@ -2,7 +2,9 @@ import 'package:app_motoblack_cliente/controllers/activityController.dart';
 import 'package:app_motoblack_cliente/controllers/destinySelectionController.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/models/Address.dart';
+import 'package:app_motoblack_cliente/widgets/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../util/util.dart';
 import 'dart:async';
@@ -49,8 +51,46 @@ class _DestinySelectionState extends State<DestinySelection> {
 
   final DestinySelectionController _destinySelectionController =
       DestinySelectionController();
+  final ActivityController _activityController = ActivityController();
 
   final _formKey = GlobalKey<FormState>();
+
+  void _initTrip() async {
+    if (_formKey.currentState!.validate()) {
+     
+      Map<String, dynamic> response = await _activityController.initActivity(
+          _originPosition!, _destinyPosition!, 1);
+
+      if (response['error'] == false) {
+        if (context.mounted) {
+          Navigator.pop(context, response['activity']);
+        }
+      } else {
+        setState(() {
+          _isInit = false;
+        });
+
+        FToast().init(context).showToast(
+            child: MyToast(
+              msg: Text(
+                response['status'] == 422
+                    ? response['error']
+                    : 'Houve um erro ao iniciar sua corrida! Tente novamente mais tarde.',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              icon: const Icon(
+                Icons.error,
+                color: Colors.white,
+              ),
+              color: Colors.redAccent,
+            ),
+            gravity: ToastGravity.BOTTOM,
+            toastDuration: const Duration(seconds: 5));
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -521,45 +561,6 @@ class _DestinySelectionState extends State<DestinySelection> {
           .complete(await _destinySelectionController.getSuggestions(value));
     });
     return completer.future;
-  }
-
-  void _initTrip() async {
-    if (_formKey.currentState!.validate()) {
-     
-      Navigator.pop(context, Activity(type: ActivityType.trip, origin: _originPosition!, destiny: _destinyPosition!,));
-
-      // Map<String, dynamic> response = await _activityController.initActivity(
-      //     _originPosition!, _destinyPosition!, 1);
-
-      // if (response['error'] == false) {
-      //   if (context.mounted) {
-      //     Navigator.pop(context, response['activity']);
-      //   }
-      // } else {
-      //   setState(() {
-      //     _isInit = false;
-      //   });
-
-      //   FToast().init(context).showToast(
-      //       child: MyToast(
-      //         msg: Text(
-      //           response['status'] == 422
-      //               ? response['error']
-      //               : 'Houve um erro ao iniciar sua corrida! Tente novamente mais tarde.',
-      //           style: const TextStyle(
-      //             color: Colors.white,
-      //           ),
-      //         ),
-      //         icon: const Icon(
-      //           Icons.error,
-      //           color: Colors.white,
-      //         ),
-      //         color: Colors.redAccent,
-      //       ),
-      //       gravity: ToastGravity.BOTTOM,
-      //       toastDuration: const Duration(seconds: 5));
-      // }
-    }
   }
 
   @override

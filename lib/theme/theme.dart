@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+
+const _primaryColor = const Color.fromARGB(255, 197, 179, 88);
+const _sencondaryColor =  const Color.fromARGB(255, 3, 3, 3);
+const _dangerColor = Color.fromARGB(210, 182, 21, 21);
+const _inversePrimary = Color.fromARGB(255, 216, 216, 216);
+
 var kTheme = ThemeData.dark().copyWith(
   appBarTheme: const AppBarTheme(
-    titleTextStyle: TextStyle(color: Colors.black87, fontSize: 24),
-    iconTheme: IconThemeData(color: Colors.black87, size: 24),
+    titleTextStyle: TextStyle(color: _sencondaryColor, fontSize: 24),
+    iconTheme: IconThemeData(color: _sencondaryColor, size: 24),
   ),
   textSelectionTheme: const TextSelectionThemeData(
-    cursorColor: Colors.black87,
-    selectionHandleColor: const Color.fromARGB(255, 197, 179, 88),
-    selectionColor: Colors.white
+    cursorColor: _sencondaryColor,
+    selectionHandleColor: _primaryColor,
   ),
   colorScheme: ColorScheme.fromSeed(
-    seedColor: const Color.fromARGB(211, 0, 0, 0),
+    seedColor: _sencondaryColor,
+    inversePrimary: _inversePrimary,
     brightness: Brightness.dark,
-    surface: const Color.fromARGB(255, 197, 179, 88),
-    primary: const Color.fromRGBO(255, 193, 7, 1),
-    secondary: Color.fromARGB(211, 0, 0, 0),
+    surface: _primaryColor,
   ),
-  scaffoldBackgroundColor: const Color.fromARGB(255, 3, 3, 3),
+  scaffoldBackgroundColor: _sencondaryColor,
   textTheme: GoogleFonts.latoTextTheme(),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       textStyle: const TextStyle(color: Colors.white),
-      foregroundColor: const Color.fromARGB(211, 0, 0, 0),
+      foregroundColor: _sencondaryColor,
+      backgroundColor: _primaryColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4.0),
       ),
@@ -34,49 +39,48 @@ var kTheme = ThemeData.dark().copyWith(
     fillColor: Color.fromARGB(255, 216, 216, 216),
     border: OutlineInputBorder(
       borderSide: BorderSide(
-        color: Color.fromARGB(211, 0, 0, 0),
+        color: _sencondaryColor,
       ),
     ),
     errorBorder: OutlineInputBorder(
       borderSide: BorderSide(
-        color: Color.fromARGB(210, 182, 21, 21),
+        color: _dangerColor,
       ),
     ),
     focusedErrorBorder: OutlineInputBorder(
       borderSide: BorderSide(
-        color: Color.fromARGB(210, 182, 21, 21),
+        color: _dangerColor,
       ),
     ),
     errorStyle: TextStyle(
-      color: Color.fromARGB(210, 182, 21, 21),
+      color: _dangerColor,
     ),
     labelStyle: TextStyle(
       fontSize: 18,
-      color: Color.fromARGB(211, 0, 0, 0),
+      color: _sencondaryColor,
     ),
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(
-        color: Color.fromARGB(255, 197, 179, 88),
+        color: _primaryColor,
       ), // Border when TextField is focused
     ),
-    hintStyle: TextStyle(color: Color.fromARGB(211, 0, 0, 0), fontSize: 18),
-    iconColor: Color.fromARGB(211, 0, 0, 0),
-    suffixIconColor: Color.fromARGB(211, 0, 0, 0),
-    prefixIconColor: Color.fromARGB(211, 0, 0, 0),
+    hintStyle: TextStyle(color: _sencondaryColor, fontSize: 18),
+    iconColor: _sencondaryColor,
+    prefixIconColor: _sencondaryColor,
   ),
-  primaryColor: const Color.fromARGB(255, 197, 179, 88),
+  primaryColor: _primaryColor,
   progressIndicatorTheme: const ProgressIndicatorThemeData(
-    color: Color.fromARGB(255, 197, 179, 88),
+    color: _primaryColor,
   ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-    selectedItemColor: Color.fromARGB(255, 197, 179, 88),
+    selectedItemColor: _primaryColor,
   ),
   dialogTheme: DialogTheme(backgroundColor: Colors.white),
   tabBarTheme: const TabBarTheme(
-  labelColor: Colors.black,
-  unselectedLabelColor: Colors.black54,
+  labelColor: _sencondaryColor,
+  unselectedLabelColor: _sencondaryColor,
   indicator: UnderlineTabIndicator(
-    borderSide: BorderSide(color: Colors.black, width: 2.0),
+    borderSide: BorderSide(color: _sencondaryColor, width: 2.0),
     insets: EdgeInsets.symmetric(horizontal: 16.0),
   ),)
 );

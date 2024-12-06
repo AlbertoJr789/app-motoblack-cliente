@@ -1,5 +1,6 @@
 import 'package:app_motoblack_cliente/models/Address.dart';
 import 'package:app_motoblack_cliente/models/Vehicle.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum AgentType { motoblack, driver, unknown }
 
@@ -39,6 +40,16 @@ class Agent {
       case VehicleType.car: return 'Motorista';
       default: return '';
     }
+  }
+
+
+  static Future<String?> getUuid() async { 
+    final prefs = await SharedPreferences.getInstance(); 
+    return prefs.getString('uuid');
+  }
+
+  static setUuid(String uuid) {
+   SharedPreferences.getInstance().then((instance)=> instance.setString('uuid', uuid));
   }
 
 
