@@ -18,6 +18,7 @@ var kTheme = ThemeData.dark().copyWith(
   ),
   colorScheme: ColorScheme.fromSeed(
     seedColor: _sencondaryColor,
+    secondary: _sencondaryColor,
     inversePrimary: _inversePrimary,
     brightness: Brightness.dark,
     surface: _primaryColor,
@@ -32,6 +33,11 @@ var kTheme = ThemeData.dark().copyWith(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(4.0),
       ),
+    ),
+  ),
+  iconButtonTheme: IconButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStateProperty.all(_primaryColor),
     ),
   ),
   inputDecorationTheme: const InputDecorationTheme(

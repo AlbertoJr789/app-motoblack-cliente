@@ -58,6 +58,10 @@ class _DestinySelectionState extends State<DestinySelection> {
   void _initTrip() async {
     if (_formKey.currentState!.validate()) {
      
+     setState(() {
+        _isInit = true;
+     });
+
       Map<String, dynamic> response = await _activityController.initActivity(
           _originPosition!, _destinyPosition!, 1);
 
@@ -489,7 +493,7 @@ class _DestinySelectionState extends State<DestinySelection> {
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: _initTrip,
-                      child: const Text(
+                      child: _isInit ? CircularProgressIndicator(color: Theme.of(context).colorScheme.secondary,) : const Text(
                               'Partiu!',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
