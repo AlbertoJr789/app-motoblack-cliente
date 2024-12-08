@@ -493,7 +493,10 @@ class _DestinySelectionState extends State<DestinySelection> {
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: _initTrip,
-                      child: _isInit ? CircularProgressIndicator(color: Theme.of(context).colorScheme.secondary,) : const Text(
+                      child: _isInit ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(color: Theme.of(context).colorScheme.secondary,),
+                      ) : const Text(
                               'Partiu!',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),

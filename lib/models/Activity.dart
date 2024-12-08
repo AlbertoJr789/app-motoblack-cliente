@@ -21,6 +21,7 @@ ActivityType activityTypeToEnum(int type) {
 
 class Activity {
   int? id;
+  String? uuid;
   ActivityType type;
   Agent? agent;
   Vehicle? vehicle;
@@ -39,6 +40,7 @@ class Activity {
 
   Activity(
       {this.id,
+      this.uuid,
        required this.type,
        this.agent,
        this.vehicle,
@@ -56,6 +58,7 @@ class Activity {
   factory Activity.fromJson(Map<String, dynamic> map) {
     return Activity(
         id: map['id'],
+        uuid: map['uuid'],
         type: activityTypeToEnum(map['type']['tipo']),
         agent: map['agent'] != null ? Agent.fromJson(map['agent']) : null,
         vehicle: map['vehicle'] != null ? Vehicle.fromJson(map['vehicle']) : null,

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:app_motoblack_cliente/controllers/tripController.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
+import 'package:app_motoblack_cliente/models/Agent.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class Trip extends StatefulWidget {
@@ -21,6 +23,9 @@ class _TripState extends State<Trip> with TickerProviderStateMixin {
   late String _time;
   final Stopwatch _stopwatch = Stopwatch();
   final TripController _controller = TripController();
+  late StreamSubscription _tripStream;
+  late Agent? _agent;   
+  bool _foundAgent = false;
 
   @override
   void initState() {
@@ -28,16 +33,32 @@ class _TripState extends State<Trip> with TickerProviderStateMixin {
     _drawAgent();
   }
 
-  _drawAgent() {
-    _controller.drawAgent(widget.trip).then((value){
-      if(value == null && _controller.tries < 5) {
-        _drawAgent();
-      }else{
-        print('agente encontrado');
-        print(value!.name);
+  _drawAgent() async {
+    _agent = await _controller.drawAgent(widget.trip);
+    _tripStream = FirebaseDatabase.instance.ref('trips').child(widget.trip.uuid!).onValue.listen((querySnapshot) async {
+      final data = querySnapshot.snapshot.value as Map;
+      print(data['agent']);
+      if(data['agent'].containsKey('id')){
+        _foundAgent = true;
+        _tripStream.cancel();
+        _manageTrip();
+      }
+      if(data['agent']['accepting'] == false){
+        _agent = await _controller.drawAgent(widget.trip);
       }
     });
   }
+
+  _manageTrip(){
+       _tripStream = FirebaseDatabase.instance.ref('trips').child(widget.trip.uuid!).onValue.listen((querySnapshot) async {
+        final data = querySnapshot.snapshot.value as Map;
+        if(data['cancelled'] == true){ //agent cancelled
+
+        }
+        //update map coordinates
+      });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +131,8 @@ class _TripState extends State<Trip> with TickerProviderStateMixin {
     print('dispose trip');
     _stopwatch.reset();
     _stopwatch.stop();
-    _timer!.cancel();            
+    _timer!.cancel();           
+    _tripStream.cancel(); 
     super.dispose();
   }
 
