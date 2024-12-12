@@ -1,8 +1,10 @@
 
+import 'package:app_motoblack_cliente/controllers/activityController.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/screens/destinySelection.dart';
 import 'package:app_motoblack_cliente/widgets/trip.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
 
@@ -13,11 +15,19 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  bool _driveMode = false;
-  late var _driveRes;
+  late ActivityController _controller;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller = Provider.of<ActivityController>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
+    _controller = context.watch<ActivityController>();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Padding(
@@ -29,16 +39,16 @@ class _HomeState extends State<Home> {
               height: MediaQuery.of(context).size.height * 0.05,
             ),
             Material(
-              child: _driveMode
-                  ? Trip(trip: _driveRes,endTripAction: _endTripDialog) : TextField(
+              child: _controller.currentActivity != null
+                  ? Trip() : TextField(
                       onTap: () async {
                         FocusScope.of(context).unfocus();
-                        _driveRes = await Navigator.of(context).push(
+                        final ret = await Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (ctx) => DestinySelection()));
-                        if (_driveRes is Activity) {
+                        if (ret is Activity) {
                           setState(() {
-                            _driveMode = true;
+                            _controller.currentActivity = ret;
                           });
                         }
                       },
@@ -56,30 +66,5 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _endTripDialog(){
-      showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Tem certeza que deseja cancelar a corrida ?'),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-            },
-            child: const Text('Não'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _driveMode = false;
-              });
-              Navigator.pop(ctx);
-            },
-            child: const Text('Sim'),
-          ),
-        ],
-      ),
-    );
-  }
 
 }

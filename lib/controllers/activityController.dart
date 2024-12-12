@@ -1,13 +1,20 @@
+import 'package:app_motoblack_cliente/controllers/apiClient.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/models/Address.dart';
+import 'package:app_motoblack_cliente/models/Agent.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class ActivityController extends ChangeNotifier {
+  
   int _page = 1;
   bool _hasMore = true;
   String error = '';
   List<Activity> activities = [];
+  Activity? currentActivity;
+
+  static final ApiClient apiClient = ApiClient.instance;
+
 
   getActivities() async {
     try {
@@ -31,6 +38,8 @@ class ActivityController extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get hasMore => _hasMore;
+
   Future<Map<String,dynamic>> initActivity(Address origin,Address destiny,int type) async {
       try {
         FormData data = FormData.fromMap({
@@ -50,7 +59,31 @@ class ActivityController extends ChangeNotifier {
         return {"error": e.toString(),"status": 500};
       }
   }
-  
-  bool get hasMore => _hasMore;
 
+   Future<Agent?> drawAgent(Activity trip) async {
+      try {
+      Response response = await apiClient.dio.get(
+        '/api/drawAgent',
+        options: Options(
+          contentType: Headers.multipartFormDataContentType,
+          headers: {
+            'accept': 'application/json',
+          },
+        ),
+        queryParameters: {
+          'latitude': trip.origin.latitude,
+          'longitude': trip.origin.longitude,
+          'tripType': trip.type.index
+        },
+      );
+      if (response.data.containsKey('data')) {
+        return Agent.fromJson(response.data['data']);
+      } 
+    } on DioException catch (e) {
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+  
 }
