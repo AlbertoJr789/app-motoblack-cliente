@@ -32,7 +32,7 @@ class Vehicle {
 
   factory Vehicle.fromJson(Map<String, dynamic> map) {
     return Vehicle(
-        type: _vehicleTypeToEnum(map['type']['type']),
+        type: _vehicleTypeToEnum(map['type']),
         plate: map['plate'],
         model: map['model'],
         brand: map['brand'],

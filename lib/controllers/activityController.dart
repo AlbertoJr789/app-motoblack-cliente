@@ -63,22 +63,15 @@ class ActivityController extends ChangeNotifier {
    Future<Agent?> drawAgent(Activity trip) async {
       try {
       Response response = await apiClient.dio.get(
-        '/api/drawAgent',
+        '/api/drawAgent/${trip.id}',
         options: Options(
           contentType: Headers.multipartFormDataContentType,
           headers: {
             'accept': 'application/json',
           },
-        ),
-        queryParameters: {
-          'latitude': trip.origin.latitude,
-          'longitude': trip.origin.longitude,
-          'tripType': trip.type.index
-        },
+        )
       );
-      if (response.data.containsKey('data')) {
-        return Agent.fromJson(response.data['data']);
-      } 
+      return Agent.fromJson(response.data['data']); 
     } on DioException catch (e) {
       return null;
     } catch (e) {
