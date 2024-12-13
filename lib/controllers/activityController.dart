@@ -79,4 +79,26 @@ class ActivityController extends ChangeNotifier {
     }
   }
   
+  Future<bool> cancelActivity(Activity trip,String reason) async {
+    try {
+      Response response = await apiClient.dio.patch(
+        '/api/cancel/${trip.id}',
+        options: Options(
+          contentType: Headers.multipartFormDataContentType,
+          headers: {
+            'accept': 'application/json',
+          },
+        ),
+        data: FormData.fromMap({'reason': reason})
+      );
+      currentActivity = null;
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
 }

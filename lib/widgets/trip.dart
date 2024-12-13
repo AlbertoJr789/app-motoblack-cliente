@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:app_motoblack_cliente/controllers/activityController.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/models/Agent.dart';
+import 'package:app_motoblack_cliente/widgets/assets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -59,9 +61,7 @@ class _TripState extends State<Trip> {
         .onValue
         .listen((querySnapshot) async {
       final data = querySnapshot.snapshot.value as Map;
-      if (data['cancelled'] == true) {
-        //agent cancelled
-      }
+      if (data['cancelled'] == true) {}
     });
 
     _agentStream = FirebaseDatabase.instance
@@ -85,11 +85,13 @@ class _TripState extends State<Trip> {
       children: [
         if (_agent != null)
           Text(
-                      'Agente encontrado! Atente-se à descrição do mesmo:',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.inversePrimary),
-                      textAlign: TextAlign.center,
-                    ),
-
+            'Agente encontrado! Atente-se à descrição do mesmo:',
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(color: Theme.of(context).colorScheme.inversePrimary),
+            textAlign: TextAlign.center,
+          ),
         Container(
           width: double.infinity,
           height: MediaQuery.of(context).size.height * 0.2,
@@ -195,7 +197,7 @@ class _TripState extends State<Trip> {
                         ),
                       ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0,right: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                   child: Divider(),
                 ),
                 ElevatedButton.icon(
@@ -236,7 +238,6 @@ class _TripState extends State<Trip> {
               markers: Set<Marker>.of(_markers),
             ),
           ),
-      
       ],
     );
   }
@@ -261,6 +262,79 @@ class _TripState extends State<Trip> {
             child: const Text('Sim'),
           ),
         ],
+      ),
+    );
+  }
+
+  TextEditingController _cancellingReason = TextEditingController();
+  final _formCancelamentoKey = GlobalKey<FormState>();
+  bool _cancelling = false;
+
+  void _cancelTripDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Form(
+                child: Column(
+              key: _formCancelamentoKey,
+              children: [
+                Text('Insira o motivo do cancelamento: '),
+                TextFormField(
+                  controller: _cancellingReason,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Motivo não pode estar vazio';
+                    }
+                    return null;
+                  },
+                )
+              ],
+            )),
+            actions: [
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formCancelamentoKey.currentState!.validate()) {
+                    setState(() {
+                      _cancelling = true;
+                    });
+                    final ret = await _controller.cancelActivity(
+                      _controller.currentActivity!,
+                      _cancellingReason.text,
+                    );
+                    setState(() {
+                      _cancelling = false;
+                    });
+                    if (!ret) {
+                      FToast().init(context).showToast(
+                          child: MyToast(
+                            msg: const Text('Houve um erro ao cancelar sua corrida! Tente novamente.',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.error,
+                              color: Colors.white,
+                            ),
+                            color: Colors.redAccent,
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: const Duration(seconds: 5));
+                    }else{
+                      Navigator.pop(ctx);
+                    }
+                  }
+                },
+                child: _cancelling ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(),
+                ): Text('Cancelar'),
+              ),
+            ],
+          );
+        }
       ),
     );
   }
