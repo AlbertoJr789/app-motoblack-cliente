@@ -79,17 +79,23 @@ class ActivityController extends ChangeNotifier {
     }
   }
   
-  Future<bool> cancelActivity(Activity trip,String reason) async {
+   Future<bool> cancelActivity({Activity? trip,String? reason,bool alreadyCancelled=false}) async {
     try {
-      Response response = await apiClient.dio.patch(
-        '/api/cancel/${trip.id}',
+
+      if(alreadyCancelled){ //if it was cancelled from somewhere else
+        currentActivity = null;
+        notifyListeners();
+        return true;
+      }
+
+      Response response = await apiClient.dio.post(
+        '/api/cancel/${trip!.id}',
         options: Options(
-          contentType: Headers.multipartFormDataContentType,
           headers: {
             'accept': 'application/json',
           },
         ),
-        data: FormData.fromMap({'reason': reason})
+        data: {'reason': reason}
       );
       currentActivity = null;
       notifyListeners();

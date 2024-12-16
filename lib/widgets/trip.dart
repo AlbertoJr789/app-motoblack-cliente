@@ -60,8 +60,37 @@ class _TripState extends State<Trip> {
         .child(_controller.currentActivity!.uuid!)
         .onValue
         .listen((querySnapshot) async {
-      final data = querySnapshot.snapshot.value as Map;
-      if (data['cancelled'] == true) {}
+      if (querySnapshot.snapshot.exists) {
+        final data = querySnapshot.snapshot.value as Map;
+        if (data['cancelled'] == true) {
+          _controller.cancelActivity(alreadyCancelled: true);
+          _tripStream.cancel();
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text('Corrida cancelada pelo agente !'),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text('Motivo: ${data['cancellingReason']}'),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+      }
     });
 
     _agentStream = FirebaseDatabase.instance
@@ -256,8 +285,8 @@ class _TripState extends State<Trip> {
           ),
           ElevatedButton(
             onPressed: () {
-              setState(() {});
               Navigator.pop(ctx);
+              _cancelTripDialog();
             },
             child: const Text('Sim'),
           ),
@@ -273,69 +302,74 @@ class _TripState extends State<Trip> {
   void _cancelTripDialog() {
     showDialog(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: Form(
-                child: Column(
+      builder: (ctx) => StatefulBuilder(builder: (context, setState) {
+        return AlertDialog(
+          title: Form(
               key: _formCancelamentoKey,
-              children: [
-                Text('Insira o motivo do cancelamento: '),
-                TextFormField(
-                  controller: _cancellingReason,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Motivo não pode estar vazio';
-                    }
-                    return null;
-                  },
-                )
-              ],
-            )),
-            actions: [
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formCancelamentoKey.currentState!.validate()) {
-                    setState(() {
-                      _cancelling = true;
-                    });
-                    final ret = await _controller.cancelActivity(
-                      _controller.currentActivity!,
-                      _cancellingReason.text,
-                    );
-                    setState(() {
-                      _cancelling = false;
-                    });
-                    if (!ret) {
-                      FToast().init(context).showToast(
-                          child: MyToast(
-                            msg: const Text('Houve um erro ao cancelar sua corrida! Tente novamente.',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                            icon: const Icon(
-                              Icons.error,
+              child: Column(
+                children: [
+                  Text('Insira o motivo do cancelamento: '),
+                  TextFormField(
+                    controller: _cancellingReason,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Motivo não pode estar vazio';
+                      }
+                      return null;
+                    },
+                  )
+                ],
+              )),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                if (_formCancelamentoKey.currentState!.validate()) {
+                  setState(() {
+                    _cancelling = true;
+                  });
+                  final ret = await _controller.cancelActivity(
+                    trip: _controller.currentActivity!,
+                    reason: _cancellingReason.text,
+                  );
+                  setState(() {
+                    _cancelling = false;
+                  });
+                  if (!ret) {
+                    FToast().init(context).showToast(
+                        child: MyToast(
+                          msg: const Text(
+                            'Houve um erro ao cancelar sua corrida! Tente novamente.',
+                            style: TextStyle(
                               color: Colors.white,
                             ),
-                            color: Colors.redAccent,
                           ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: const Duration(seconds: 5));
-                    }else{
-                      Navigator.pop(ctx);
-                    }
+                          icon: const Icon(
+                            Icons.error,
+                            color: Colors.white,
+                          ),
+                          color: Colors.redAccent,
+                        ),
+                        gravity: ToastGravity.BOTTOM,
+                        toastDuration: const Duration(seconds: 5));
+                  } else {
+                     _tripStream.cancel();
+                     _agentStream.cancel();
+                    Navigator.pop(ctx);
                   }
-                },
-                child: _cancelling ? const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(),
-                ): Text('Cancelar'),
-              ),
-            ],
-          );
-        }
-      ),
+                }
+              },
+              child: _cancelling
+                  ? Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    )
+                  : Text('Cancelar'),
+            ),
+          ],
+        );
+      }),
     );
   }
 
