@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,7 @@ class _TripState extends State<Trip> {
   late ActivityController _controller;
   late StreamSubscription _tripStream;
   late StreamSubscription _agentStream;
+  late StreamSubscription _locationListener;
   Agent? _agent;
   bool _foundAgent = false;
   List<Marker> _markers = [];
@@ -106,6 +108,13 @@ class _TripState extends State<Trip> {
       ));
       setState(() {});
     });
+
+    _locationListener = Geolocator.getPositionStream().listen((Position position) {
+         FirebaseDatabase.instance.ref('trips').child(_controller.currentActivity!.uuid!).child('passenger').update({
+          'latitude': position.latitude,
+          'longitude': position.longitude
+        });
+      });
   }
 
   @override
@@ -377,6 +386,7 @@ class _TripState extends State<Trip> {
   void dispose() {
     _tripStream.cancel();
     _agentStream.cancel();
+    _locationListener.cancel();
     super.dispose();
   }
 }
