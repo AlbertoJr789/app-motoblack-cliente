@@ -18,17 +18,19 @@ AgentType _agentTypeToEnum(int type) {
 class Agent {
   int? id;
   String? uuid;
+  int? userId;
   String name;
   Address? currentLocation;
   String? avatar;
   Vehicle? vehicle;
 
-  Agent({this.id,this.uuid,required this.name,this.currentLocation, this.avatar,this.vehicle});
+  Agent({this.id,this.uuid,required this.name,this.userId,this.currentLocation, this.avatar,this.vehicle});
 
   factory Agent.fromJson(Map<String, dynamic> map) {
     return Agent(
         id: map['id'],
         uuid: map['uuid'],
+        userId: map['user_id'],
         name: map['name'],
         avatar: map['avatar'], 
         vehicle: map['vehicle'] != null ? Vehicle.fromJson(map['vehicle']) : null

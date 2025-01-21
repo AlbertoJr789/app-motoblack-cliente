@@ -4,6 +4,8 @@ import 'package:app_motoblack_cliente/models/Address.dart';
 import 'package:app_motoblack_cliente/models/Agent.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class ActivityController extends ChangeNotifier {
   
@@ -14,7 +16,6 @@ class ActivityController extends ChangeNotifier {
   Activity? currentActivity;
 
   static final ApiClient apiClient = ApiClient.instance;
-
 
   getActivities() async {
     try {
@@ -49,6 +50,7 @@ class ActivityController extends ChangeNotifier {
         });
         Response response = await Activity.storeActivity(data);
         if (response.data['success']) {
+          storeCurrentActivity(data);
           return {"error": false,"activity": Activity.fromJson(response.data['data'])};
         } else {
           return {"error": response.data['data'],"status": response.statusCode};
@@ -105,6 +107,27 @@ class ActivityController extends ChangeNotifier {
     } catch (e) {
       return false;
     }
+  }
+
+  //activity disk persistance, in case user closes the app
+  storeCurrentActivity(Map data) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('currentActivity',jsonEncode(data));
+
+  }
+
+  getCurrentActivity() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? activity = prefs.getString('currentActivity');
+    currentActivity = activity != null ? Activity.fromJson(jsonDecode(activity)) : null;
+    if(currentActivity != null){
+      notifyListeners();
+    }
+  }
+
+  removeCurrentActivity() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('currentActivity');
   }
 
 }

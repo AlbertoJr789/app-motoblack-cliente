@@ -24,8 +24,8 @@ class Address {
 
   factory Address.fromJson(Map<String, dynamic> map) {
     return Address(
-        latitude: double.parse(map['latitude']),
-        longitude: double.parse(map['longitude']),
+        latitude: map['latitude'],
+        longitude: map['longitude'],
         zipCode: map['zipCode'],
         street: map['street'],
         number: map['number'],

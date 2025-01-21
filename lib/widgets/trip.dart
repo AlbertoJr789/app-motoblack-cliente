@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:app_motoblack_cliente/controllers/activityController.dart';
+import 'package:app_motoblack_cliente/controllers/apiClient.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/models/Agent.dart';
 import 'package:app_motoblack_cliente/widgets/assets.dart';
+import 'package:app_motoblack_cliente/widgets/tripIcon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -27,12 +29,25 @@ class _TripState extends State<Trip> {
   Agent? _agent;
   bool _foundAgent = false;
   List<Marker> _markers = [];
+  BitmapDescriptor? _agentIcon;
+
 
   @override
   void initState() {
     super.initState();
     _controller = Provider.of<ActivityController>(context, listen: false);
     _drawAgent();
+  }
+
+  _createMarkerIcon() async {
+    try {
+      final String url = '${ApiClient.instance.baseUrl}/api/marker/${_controller.currentActivity!.agent!.userId}';
+      _agentIcon = await getMarkerImageFromUrl(url,targetWidth: 120);
+      setState(() {});
+    } catch (e) {
+      _agentIcon = BitmapDescriptor.defaultMarker;
+      setState(() {});
+    }
   }
 
   _drawAgent() async {
@@ -56,7 +71,10 @@ class _TripState extends State<Trip> {
     });
   }
 
-  _manageTrip() {
+  _manageTrip() async {
+
+    await _createMarkerIcon();
+
     _tripStream = FirebaseDatabase.instance
         .ref('trips')
         .child(_controller.currentActivity!.uuid!)
@@ -64,7 +82,7 @@ class _TripState extends State<Trip> {
         .listen((querySnapshot) async {
       if (querySnapshot.snapshot.exists) {
         final data = querySnapshot.snapshot.value as Map;
-        if (data['cancelled'] == true) {
+        if (data['cancelled'] == true && data['whoCancelled'] == 'a') {
           _controller.cancelActivity(alreadyCancelled: true);
           _tripStream.cancel();
           showDialog(
@@ -105,6 +123,8 @@ class _TripState extends State<Trip> {
       _markers.add(Marker(
         markerId: MarkerId('agent'),
         position: LatLng(data['latitude'], data['longitude']),
+        icon: _agentIcon!,
+        infoWindow: InfoWindow(title: 'Seu ${_agent!.typeName}')
       ));
       setState(() {});
     });
