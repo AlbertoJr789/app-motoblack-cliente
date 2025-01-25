@@ -50,7 +50,7 @@ class ActivityController extends ChangeNotifier {
         });
         Response response = await Activity.storeActivity(data);
         if (response.data['success']) {
-          storeCurrentActivity(data);
+          storeCurrentActivity(response.data['data']);
           return {"error": false,"activity": Activity.fromJson(response.data['data'])};
         } else {
           return {"error": response.data['data'],"status": response.statusCode};
@@ -85,8 +85,7 @@ class ActivityController extends ChangeNotifier {
     try {
 
       if(alreadyCancelled){ //if it was cancelled from somewhere else
-        currentActivity = null;
-        notifyListeners();
+        removeCurrentActivity();
         return true;
       }
 
@@ -99,8 +98,7 @@ class ActivityController extends ChangeNotifier {
         ),
         data: {'reason': reason}
       );
-      currentActivity = null;
-      notifyListeners();
+      removeCurrentActivity();
       return true;
     } on DioException catch (e) {
       return false;
@@ -110,10 +108,11 @@ class ActivityController extends ChangeNotifier {
   }
 
   //activity disk persistance, in case user closes the app
-  storeCurrentActivity(Map data) async {
+  storeCurrentActivity(Map<String,dynamic> data) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('currentActivity',jsonEncode(data));
-
+    currentActivity = Activity.fromJson(data);
+    notifyListeners();
   }
 
   getCurrentActivity() async {
@@ -128,6 +127,8 @@ class ActivityController extends ChangeNotifier {
   removeCurrentActivity() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('currentActivity');
+    currentActivity = null;
+    notifyListeners();
   }
 
 }

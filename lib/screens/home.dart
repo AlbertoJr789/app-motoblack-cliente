@@ -20,9 +20,9 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller = Provider.of<ActivityController>(context, listen: false);
+    _controller.getCurrentActivity();
   }
 
   @override
@@ -46,11 +46,7 @@ class _HomeState extends State<Home> {
                         final ret = await Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (ctx) => DestinySelection()));
-                        if (ret is Activity) {
-                          setState(() {
-                            _controller.currentActivity = ret;
-                          });
-                        }
+                        setState(() {});
                       },
                       decoration: const InputDecoration(
                           hintText: 'Vai pra onde?',

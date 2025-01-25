@@ -26,7 +26,7 @@ class _TripState extends State<Trip> {
   late StreamSubscription _tripStream;
   late StreamSubscription _agentStream;
   late StreamSubscription _locationListener;
-  Agent? _agent;
+  final DraggableScrollableController _scrollController = DraggableScrollableController();
   bool _foundAgent = false;
   List<Marker> _markers = [];
   BitmapDescriptor? _agentIcon;
@@ -51,7 +51,7 @@ class _TripState extends State<Trip> {
   }
 
   _drawAgent() async {
-    _agent = await _controller.drawAgent(_controller.currentActivity!);
+    _controller.currentActivity!.agent = await _controller.drawAgent(_controller.currentActivity!);
     _tripStream = FirebaseDatabase.instance
         .ref('trips')
         .child(_controller.currentActivity!.uuid!)
@@ -66,7 +66,7 @@ class _TripState extends State<Trip> {
         return;
       }
       if (data['agent']['accepting'] == false) {
-        _agent = await _controller.drawAgent(_controller.currentActivity!);
+        _controller.currentActivity!.agent = await _controller.drawAgent(_controller.currentActivity!);
       }
     });
   }
@@ -115,7 +115,7 @@ class _TripState extends State<Trip> {
 
     _agentStream = FirebaseDatabase.instance
         .ref('availableAgents')
-        .child(_agent!.uuid!)
+        .child(_controller.currentActivity!.agent!.uuid!)
         .onValue
         .listen((querySnapshot) async {
       final data = querySnapshot.snapshot.value as Map;
@@ -124,7 +124,7 @@ class _TripState extends State<Trip> {
         markerId: MarkerId('agent'),
         position: LatLng(data['latitude'], data['longitude']),
         icon: _agentIcon!,
-        infoWindow: InfoWindow(title: 'Seu ${_agent!.typeName}')
+        infoWindow: InfoWindow(title: 'Seu ${_controller.currentActivity!.agent!.typeName}')
       ));
       setState(() {});
     });
@@ -141,7 +141,7 @@ class _TripState extends State<Trip> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (_agent != null)
+        if (_controller.currentActivity!.agent != null)
           Text(
             'Agente encontrado! Atente-se à descrição do mesmo:',
             style: Theme.of(context)
@@ -165,7 +165,7 @@ class _TripState extends State<Trip> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _agent == null
+                _controller.currentActivity!.agent == null
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
@@ -202,9 +202,9 @@ class _TripState extends State<Trip> {
                                                 Icons.person_off_outlined,
                                                 color: Colors.black,
                                               ),
-                                          imageUrl: _agent!.avatar!),
+                                          imageUrl: _controller.currentActivity!.agent!.avatar!),
                                     ),
-                                    Text(_agent!.name)
+                                      Text(_controller.currentActivity!.agent!.name)
                                   ],
                                 ),
                                 Expanded(child: SizedBox()),
@@ -215,26 +215,26 @@ class _TripState extends State<Trip> {
                                     Row(
                                       children: [
                                         Icon(
-                                          _agent!.vehicle!.icon,
+                                          _controller.currentActivity!.agent!.vehicle!.icon,
                                           color: Color(int.parse(
-                                            '0xFF${_agent!.vehicle!.color.toString().replaceFirst('#', '')}',
+                                            '0xFF${_controller.currentActivity!.agent!.vehicle!.color.toString().replaceFirst('#', '')}',
                                           )),
                                           size: 70,
                                         ),
                                         Column(
                                           children: [
                                             Text(
-                                                '${_agent!.vehicle!.brand} - ${_agent!.vehicle!.model}'),
+                                                '${_controller.currentActivity!.agent!.vehicle!.brand} - ${_controller.currentActivity!.agent!.vehicle!.model}'),
                                             Row(
                                               children: [
                                                 Text(
-                                                    'Placa: ${_agent!.vehicle!.plate}, Cor: '),
+                                                    'Placa: ${_controller.currentActivity!.agent!.vehicle!.plate}, Cor: '),
                                                 SizedBox(
                                                   width: 20,
                                                   height: 20,
                                                   child: Container(
                                                     color: Color(int.parse(
-                                                      '0xFF${_agent!.vehicle!.color.toString().replaceFirst('#', '')}',
+                                                      '0xFF${_controller.currentActivity!.agent!.vehicle!.color.toString().replaceFirst('#', '')}',
                                                     )),
                                                   ),
                                                 ),
@@ -282,7 +282,7 @@ class _TripState extends State<Trip> {
         const SizedBox(
           height: 10,
         ),
-        if (_agent != null)
+        if (_controller.currentActivity!.agent != null)
           Container(
             width: double.infinity,
             height: MediaQuery.of(context).size.height * 0.6 - 10,
