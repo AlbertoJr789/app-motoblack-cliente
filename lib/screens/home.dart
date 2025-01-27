@@ -36,25 +36,23 @@ class _HomeState extends State<Home> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.05,
+              height: 20,
             ),
-            Material(
-              child: _controller.currentActivity != null
-                  ? Trip() : TextField(
-                      onTap: () async {
-                        FocusScope.of(context).unfocus();
-                        final ret = await Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (ctx) => DestinySelection()));
-                        setState(() {});
-                      },
-                      decoration: const InputDecoration(
-                          hintText: 'Vai pra onde?',
-                          prefixIcon: Icon(Icons.search),
-                          iconColor: Colors.black),
-                          readOnly: true,
-                    ),
-            ),
+            _controller.currentActivity != null
+                ? Trip() : TextField(
+                    onTap: () async {
+                      FocusScope.of(context).unfocus();
+                      final ret = await Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (ctx) => DestinySelection()));
+                      setState(() {});
+                    },
+                    decoration: const InputDecoration(
+                        hintText: 'Vai pra onde?',
+                        prefixIcon: Icon(Icons.search),
+                        iconColor: Colors.black),
+                        readOnly: true,
+                  ),
             
           ],
         ),

@@ -5,6 +5,7 @@ import 'package:app_motoblack_cliente/controllers/apiClient.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/models/Agent.dart';
 import 'package:app_motoblack_cliente/widgets/assets.dart';
+import 'package:app_motoblack_cliente/widgets/tripAgentDetails.dart';
 import 'package:app_motoblack_cliente/widgets/tripIcon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -26,11 +27,11 @@ class _TripState extends State<Trip> {
   late StreamSubscription _tripStream;
   late StreamSubscription _agentStream;
   late StreamSubscription _locationListener;
-  final DraggableScrollableController _scrollController = DraggableScrollableController();
+  final DraggableScrollableController _scrollController =
+      DraggableScrollableController();
   bool _foundAgent = false;
   List<Marker> _markers = [];
   BitmapDescriptor? _agentIcon;
-
 
   @override
   void initState() {
@@ -41,8 +42,9 @@ class _TripState extends State<Trip> {
 
   _createMarkerIcon() async {
     try {
-      final String url = '${ApiClient.instance.baseUrl}/api/marker/${_controller.currentActivity!.agent!.userId}';
-      _agentIcon = await getMarkerImageFromUrl(url,targetWidth: 120);
+      final String url =
+          '${ApiClient.instance.baseUrl}/api/marker/${_controller.currentActivity!.agent!.userId}';
+      _agentIcon = await getMarkerImageFromUrl(url, targetWidth: 120);
       setState(() {});
     } catch (e) {
       _agentIcon = BitmapDescriptor.defaultMarker;
@@ -51,7 +53,8 @@ class _TripState extends State<Trip> {
   }
 
   _drawAgent() async {
-    _controller.currentActivity!.agent = await _controller.drawAgent(_controller.currentActivity!);
+    _controller.currentActivity!.agent =
+        await _controller.drawAgent(_controller.currentActivity!);
     _tripStream = FirebaseDatabase.instance
         .ref('trips')
         .child(_controller.currentActivity!.uuid!)
@@ -66,13 +69,13 @@ class _TripState extends State<Trip> {
         return;
       }
       if (data['agent']['accepting'] == false) {
-        _controller.currentActivity!.agent = await _controller.drawAgent(_controller.currentActivity!);
+        _controller.currentActivity!.agent =
+            await _controller.drawAgent(_controller.currentActivity!);
       }
     });
   }
 
   _manageTrip() async {
-
     await _createMarkerIcon();
 
     _tripStream = FirebaseDatabase.instance
@@ -121,182 +124,99 @@ class _TripState extends State<Trip> {
       final data = querySnapshot.snapshot.value as Map;
       _markers.clear();
       _markers.add(Marker(
-        markerId: MarkerId('agent'),
-        position: LatLng(data['latitude'], data['longitude']),
-        icon: _agentIcon!,
-        infoWindow: InfoWindow(title: 'Seu ${_controller.currentActivity!.agent!.typeName}')
-      ));
+          markerId: MarkerId('agent'),
+          position: LatLng(data['latitude'], data['longitude']),
+          icon: _agentIcon!,
+          infoWindow: InfoWindow(
+              title: 'Seu ${_controller.currentActivity!.agent!.typeName}')));
       setState(() {});
     });
 
-    _locationListener = Geolocator.getPositionStream().listen((Position position) {
-         FirebaseDatabase.instance.ref('trips').child(_controller.currentActivity!.uuid!).child('passenger').update({
-          'latitude': position.latitude,
-          'longitude': position.longitude
-        });
-      });
+    _locationListener =
+        Geolocator.getPositionStream().listen((Position position) {
+      FirebaseDatabase.instance
+          .ref('trips')
+          .child(_controller.currentActivity!.uuid!)
+          .child('passenger')
+          .update(
+              {'latitude': position.latitude, 'longitude': position.longitude});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (_controller.currentActivity!.agent != null)
-          Text(
-            'Agente encontrado! Atente-se à descrição do mesmo:',
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(color: Theme.of(context).colorScheme.inversePrimary),
-            textAlign: TextAlign.center,
-          ),
-        Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.2,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 197, 179, 88),
-                Color.fromARGB(255, 238, 205, 39),
-              ],
-            ),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _controller.currentActivity!.agent == null
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Procurando um ${_controller.currentActivity!.agentActivityType} pertinho de você...",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      )
-                    : IntrinsicHeight(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Column(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(25.0),
-                                      child: CachedNetworkImage(
-                                          fit: BoxFit.cover,
-                                          width: 50,
-                                          height: 50,
-                                          placeholder: (context, url) =>
-                                              const CircularProgressIndicator(),
-                                          errorWidget: (context, url, error) =>
-                                              const Icon(
-                                                Icons.person_off_outlined,
-                                                color: Colors.black,
-                                              ),
-                                          imageUrl: _controller.currentActivity!.agent!.avatar!),
-                                    ),
-                                      Text(_controller.currentActivity!.agent!.name)
-                                  ],
-                                ),
-                                Expanded(child: SizedBox()),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text('Informações do veículo'),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          _controller.currentActivity!.agent!.vehicle!.icon,
-                                          color: Color(int.parse(
-                                            '0xFF${_controller.currentActivity!.agent!.vehicle!.color.toString().replaceFirst('#', '')}',
-                                          )),
-                                          size: 70,
-                                        ),
-                                        Column(
-                                          children: [
-                                            Text(
-                                                '${_controller.currentActivity!.agent!.vehicle!.brand} - ${_controller.currentActivity!.agent!.vehicle!.model}'),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                    'Placa: ${_controller.currentActivity!.agent!.vehicle!.plate}, Cor: '),
-                                                SizedBox(
-                                                  width: 20,
-                                                  height: 20,
-                                                  child: Container(
-                                                    color: Color(int.parse(
-                                                      '0xFF${_controller.currentActivity!.agent!.vehicle!.color.toString().replaceFirst('#', '')}',
-                                                    )),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                              ],
-                            )
-                          ],
+    return Expanded(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (_controller.currentActivity!.agent == null)
+            Container(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.2,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 197, 179, 88),
+                    Color.fromARGB(255, 238, 205, 39),
+                  ],
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Procurando um ${_controller.currentActivity!.agentActivityType} pertinho de você...",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                  child: Divider(),
+                    ),
+                  ],
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _endTripDialog();
-                  },
-                  icon: const Icon(
-                    Icons.close,
+              ),
+            ),
+          if (_controller.currentActivity!.agent != null)
+            Container(
+              width: double.infinity,
+              // height: 200,
+              child: GoogleMap(
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                initialCameraPosition: CameraPosition(
+                    target: LatLng(
+                        _controller.currentActivity!.origin.latitude!,
+                        _controller.currentActivity!.origin.longitude!),
+                    zoom: 16),
+                markers: Set<Marker>.of(_markers),
+              ),
+            ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: DraggableScrollableSheet(
+              controller: _scrollController,
+              maxChildSize: 0.4, // Max height relative to the screen
+              minChildSize: 0.05, // Min height relative to the screen
+              initialChildSize: 0.05, // Initial height relative to the screen
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   ),
-                  label: const Text(
-                    "Cancelar",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        Colors.red), // Set the background color of the icon
-                  ),
-                )
-              ],
+                  child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: TripAgentDetails(
+                          activity: _controller.currentActivity!)),
+                );
+              },
             ),
           ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        if (_controller.currentActivity!.agent != null)
-          Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.6 - 10,
-            child: GoogleMap(
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              initialCameraPosition: CameraPosition(
-                  target: LatLng(_controller.currentActivity!.origin.latitude!,
-                      _controller.currentActivity!.origin.longitude!),
-                  zoom: 16),
-              markers: Set<Marker>.of(_markers),
-            ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -381,8 +301,8 @@ class _TripState extends State<Trip> {
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: const Duration(seconds: 5));
                   } else {
-                     _tripStream.cancel();
-                     _agentStream.cancel();
+                    _tripStream.cancel();
+                    _agentStream.cancel();
                     Navigator.pop(ctx);
                   }
                 }
