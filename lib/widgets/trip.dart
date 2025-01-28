@@ -29,7 +29,6 @@ class _TripState extends State<Trip> {
   late StreamSubscription _locationListener;
   final DraggableScrollableController _scrollController =
       DraggableScrollableController();
-  bool _foundAgent = false;
   List<Marker> _markers = [];
   BitmapDescriptor? _agentIcon;
 
@@ -62,10 +61,32 @@ class _TripState extends State<Trip> {
         .listen((querySnapshot) async {
       final data = querySnapshot.snapshot.value as Map;
       if (data['agent'].containsKey('id')) {
-        _foundAgent = true;
         _tripStream.cancel();
         _manageTrip();
         setState(() {});
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          FToast().init(context).showToast(
+              child: MyToast(
+                msg: const Text(
+                  'Corrida iniciada! Confira mais detalhes acima.',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                icon: const Icon(Icons.check, color: Colors.white),
+                color: Colors.greenAccent,
+              ),
+              gravity: ToastGravity.BOTTOM,
+              toastDuration: const Duration(seconds: 4));
+          _scrollController.animateTo(0.4,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut);
+          Future.delayed(const Duration(seconds: 4), () {
+            _scrollController.animateTo(0.075,
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut);
+          });
+        });
         return;
       }
       if (data['agent']['accepting'] == false) {
@@ -145,79 +166,103 @@ class _TripState extends State<Trip> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (_controller.currentActivity!.agent == null)
-            Container(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.2,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 197, 179, 88),
-                    Color.fromARGB(255, 238, 205, 39),
-                  ],
-                ),
+    return _controller.currentActivity!.agent == null
+        ? Container(
+            width: double.infinity,
+            height: 200,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 197, 179, 88),
+                  Color.fromARGB(255, 238, 205, 39),
+                ],
               ),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "Procurando um ${_controller.currentActivity!.agentActivityType} pertinho de você...",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Procurando um ${_controller.currentActivity!.agentActivityType} pertinho de você...",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          if (_controller.currentActivity!.agent != null)
-            Container(
-              width: double.infinity,
-              // height: 200,
-              child: GoogleMap(
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                        _controller.currentActivity!.origin.latitude!,
-                        _controller.currentActivity!.origin.longitude!),
-                    zoom: 16),
-                markers: Set<Marker>.of(_markers),
-              ),
-            ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: DraggableScrollableSheet(
-              controller: _scrollController,
-              maxChildSize: 0.4, // Max height relative to the screen
-              minChildSize: 0.05, // Min height relative to the screen
-              initialChildSize: 0.05, // Initial height relative to the screen
-              builder: (context, scrollController) {
-                return Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   ),
-                  child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: TripAgentDetails(
-                          activity: _controller.currentActivity!)),
-                );
-              },
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          )
+        : Expanded(
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  width: double.infinity,
+                  // height: 200,
+                  child: GoogleMap(
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    initialCameraPosition: CameraPosition(
+                        target: LatLng(
+                            _controller.currentActivity!.origin.latitude!,
+                            _controller.currentActivity!.origin.longitude!),
+                        zoom: 16),
+                    markers: Set<Marker>.of(_markers),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: DraggableScrollableSheet(
+                    controller: _scrollController,
+                    maxChildSize: 0.3, // Max height relative to the screen
+                    minChildSize: 0.075, // Min height relative to the screen
+                    initialChildSize:
+                        0.075, // Initial height relative to the screen
+                    builder: (context, scrollController) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(20)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                        child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.black,
+                                    ),
+                                    width: 50,
+                                    height: 10,
+                                  ),
+                                ),
+                                Text('Informações da Corrida'),
+                                TripAgentDetails(
+                                    activity: _controller.currentActivity!),
+                              ],
+                            )),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
   }
 
   void _endTripDialog() {
