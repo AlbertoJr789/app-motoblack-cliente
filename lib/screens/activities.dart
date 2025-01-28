@@ -56,6 +56,12 @@ class _ActivitiesState extends State<Activities> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Atividades mais recentes'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: loadActivities,
+          ),
+        ]
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),

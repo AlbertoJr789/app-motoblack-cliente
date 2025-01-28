@@ -45,7 +45,11 @@ class _HomeState extends State<Home> {
                       final ret = await Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (ctx) => DestinySelection()));
-                      setState(() {});
+                      if(ret is Activity) {
+                        _controller.currentActivity = ret;
+                        setState(() {});
+                      }
+
                     },
                     decoration: const InputDecoration(
                         hintText: 'Vai pra onde?',

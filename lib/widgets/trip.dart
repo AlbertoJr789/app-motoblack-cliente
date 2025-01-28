@@ -31,6 +31,7 @@ class _TripState extends State<Trip> {
       DraggableScrollableController();
   List<Marker> _markers = [];
   BitmapDescriptor? _agentIcon;
+  late Agent? _tempAgent;
 
   @override
   void initState() {
@@ -52,8 +53,7 @@ class _TripState extends State<Trip> {
   }
 
   _drawAgent() async {
-    _controller.currentActivity!.agent =
-        await _controller.drawAgent(_controller.currentActivity!);
+    _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
     _tripStream = FirebaseDatabase.instance
         .ref('trips')
         .child(_controller.currentActivity!.uuid!)
@@ -62,6 +62,7 @@ class _TripState extends State<Trip> {
       final data = querySnapshot.snapshot.value as Map;
       if (data['agent'].containsKey('id')) {
         _tripStream.cancel();
+        _controller.currentActivity!.agent = _tempAgent;
         _manageTrip();
         setState(() {});
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -90,8 +91,7 @@ class _TripState extends State<Trip> {
         return;
       }
       if (data['agent']['accepting'] == false) {
-        _controller.currentActivity!.agent =
-            await _controller.drawAgent(_controller.currentActivity!);
+        _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
       }
     });
   }
@@ -169,7 +169,7 @@ class _TripState extends State<Trip> {
     return _controller.currentActivity!.agent == null
         ? Container(
             width: double.infinity,
-            height: 200,
+            height: 150,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -192,6 +192,21 @@ class _TripState extends State<Trip> {
                       ),
                     ),
                   ),
+                  ElevatedButton.icon(
+                    onPressed: _endTripDialog,
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      "Cancelar",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.red), // Set the background color of the icon
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -212,6 +227,24 @@ class _TripState extends State<Trip> {
                             _controller.currentActivity!.origin.longitude!),
                         zoom: 16),
                     markers: Set<Marker>.of(_markers),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: ElevatedButton.icon(
+                    onPressed: _endTripDialog,
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      "Cancelar",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.red), // Set the background color of the icon
+                    ),
                   ),
                 ),
                 Align(
@@ -346,8 +379,6 @@ class _TripState extends State<Trip> {
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: const Duration(seconds: 5));
                   } else {
-                    _tripStream.cancel();
-                    _agentStream.cancel();
                     Navigator.pop(ctx);
                   }
                 }
@@ -369,9 +400,19 @@ class _TripState extends State<Trip> {
 
   @override
   void dispose() {
-    _tripStream.cancel();
-    _agentStream.cancel();
-    _locationListener.cancel();
+    
+    try {
+      _tripStream.cancel();
+    } catch (e) {}
+
+    try {
+      _agentStream.cancel();
+    } catch (e) {}
+    
+    try {
+      _locationListener.cancel();
+    } catch (e) {}
+
     super.dispose();
   }
 }
