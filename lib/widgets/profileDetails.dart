@@ -122,7 +122,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
         icon: Container(
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.surface,
             boxShadow: const [BoxShadow(color: Colors.white,spreadRadius: 0.5,blurRadius: 0.5)]
           ),
           padding: const EdgeInsets.all(8.0),

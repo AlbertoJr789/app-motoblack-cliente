@@ -459,7 +459,7 @@ class _DestinySelectionState extends State<DestinySelection> {
                         borderRadius:
                             const BorderRadius.all(Radius.circular(8.0)),
                         color: _autoFill
-                            ? Theme.of(context).colorScheme.primary
+                            ? Theme.of(context).colorScheme.surface
                             : Theme.of(context).colorScheme.secondary,
                         boxShadow: const [
                           BoxShadow(
