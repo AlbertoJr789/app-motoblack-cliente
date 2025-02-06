@@ -1,8 +1,8 @@
 
 import 'package:app_motoblack_cliente/controllers/activityController.dart';
-import 'package:app_motoblack_cliente/widgets/FloatingLoader.dart';
-import 'package:app_motoblack_cliente/widgets/activityCard.dart';
-import 'package:app_motoblack_cliente/widgets/errorMessage.dart';
+import 'package:app_motoblack_cliente/widgets/assets/FloatingLoader.dart';
+import 'package:app_motoblack_cliente/widgets/activity/activityCard.dart';
+import 'package:app_motoblack_cliente/widgets/assets/errorMessage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

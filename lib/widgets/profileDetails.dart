@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:app_motoblack_cliente/controllers/profileController.dart';
 import 'package:app_motoblack_cliente/util/util.dart';
-import 'package:app_motoblack_cliente/widgets/assets.dart';
-import 'package:app_motoblack_cliente/widgets/errorMessage.dart';
-import 'package:app_motoblack_cliente/widgets/phoneInput.dart';
+import 'package:app_motoblack_cliente/widgets/assets/toast.dart';
+import 'package:app_motoblack_cliente/widgets/assets/errorMessage.dart';
+import 'package:app_motoblack_cliente/widgets/assets/phoneInput.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

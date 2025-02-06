@@ -61,27 +61,20 @@ class _TripState extends State<Trip> {
         .listen((querySnapshot) async {
       final data = querySnapshot.snapshot.value as Map;
       if (data['agent'].containsKey('id')) {
+        
         _tripStream.cancel();
         _controller.currentActivity!.agent = _tempAgent;
         _manageTrip();
         setState(() {});
+        
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          FToast().init(context).showToast(
-              child: MyToast(
-                msg: const Text(
-                  'Corrida iniciada! Confira mais detalhes acima.',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-                icon: const Icon(Icons.check, color: Colors.white),
-                color: Colors.greenAccent,
-              ),
-              gravity: ToastGravity.BOTTOM,
-              toastDuration: const Duration(seconds: 4));
+          
+          toastSuccess(context, 'Corrida iniciada! Confira mais detalhes acima.');
+          
           _scrollController.animateTo(0.4,
               duration: const Duration(milliseconds: 500),
               curve: Curves.easeInOut);
+          
           Future.delayed(const Duration(seconds: 4), () {
             _scrollController.animateTo(0.075,
                 duration: const Duration(milliseconds: 500),
@@ -116,7 +109,7 @@ class _TripState extends State<Trip> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const Text('Corrida cancelada pelo agente !'),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Text('Motivo: ${data['cancellingReason']}'),
@@ -145,7 +138,7 @@ class _TripState extends State<Trip> {
       final data = querySnapshot.snapshot.value as Map;
       _markers.clear();
       _markers.add(Marker(
-          markerId: MarkerId('agent'),
+          markerId: const MarkerId('agent'),
           position: LatLng(data['latitude'], data['longitude']),
           icon: _agentIcon!,
           infoWindow: InfoWindow(

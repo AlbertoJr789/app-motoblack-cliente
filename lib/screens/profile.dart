@@ -1,7 +1,7 @@
 // import 'package:app_motoblack_cliente/widgets/help.dart';
 // import 'package:app_motoblack_cliente/widgets/paymentDetails.dart';
 import 'package:app_motoblack_cliente/controllers/loginController.dart';
-import 'package:app_motoblack_cliente/widgets/profileDetails.dart';
+import 'package:app_motoblack_cliente/widgets/profile/profileDetails.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {

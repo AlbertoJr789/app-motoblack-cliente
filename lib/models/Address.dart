@@ -9,6 +9,7 @@ class Address {
   String? country;
   String? state;
   String? city;
+  bool? selecting;
 
   Address(
       {this.latitude,

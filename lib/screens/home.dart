@@ -2,7 +2,7 @@
 import 'package:app_motoblack_cliente/controllers/activityController.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/screens/destinySelection.dart';
-import 'package:app_motoblack_cliente/widgets/trip.dart';
+import 'package:app_motoblack_cliente/widgets/trip/trip.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
