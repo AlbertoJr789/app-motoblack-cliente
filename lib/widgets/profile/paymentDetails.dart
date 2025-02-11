@@ -7,7 +7,7 @@ class PaymentDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Container(

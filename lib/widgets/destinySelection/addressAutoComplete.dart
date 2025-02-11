@@ -11,15 +11,15 @@ class AddressAutoComplete extends StatefulWidget {
   final TextEditingController textController;
   final FocusNode focusNode;
   final GlobalKey<FormFieldState>? formFieldKey;
-  final GoogleMapController? mapController;
+  final Function(Address) onSelected;
 
   AddressAutoComplete({
     super.key,
     this.position,
-    this.mapController,
     required this.textController,
     required this.focusNode,
     this.formFieldKey,
+    required this.onSelected,
   });
 
   @override
@@ -31,10 +31,6 @@ class _AddressAutoCompleteState extends State<AddressAutoComplete> {
 
   bool _showAutocomplete = false;
   bool _searching = false;
-
-  bool _gettingAddress = false;
-  bool _selectingDestiny = false;
-  bool _selectingOrigin = false;
 
   Timer? _debounce;
 
@@ -106,25 +102,9 @@ class _AddressAutoCompleteState extends State<AddressAutoComplete> {
                             title: Text(
                                 option.formattedAddress),
                             onTap: () {
-                              widget.position = option;
-                             
-                              // _gettingAddress = false;
-
                               onSelected(option);
+                              widget.onSelected(option);
                               _destinySelectionController.storeSuggestion(option);
-
-                              widget.mapController?.animateCamera(
-                                CameraUpdate
-                                    .newCameraPosition(
-                                  CameraPosition(
-                                    target: LatLng(
-                                        option.latitude!,
-                                        option.longitude!),
-                                    zoom: 16,
-                                  ),
-                                ),
-                              );
-
                             },
                           ),
                         );
@@ -169,27 +149,6 @@ class _AddressAutoCompleteState extends State<AddressAutoComplete> {
                 ),
               ),
             ),
-            onTap: () {
-              // _selectingDestiny = false;
-              // _selectingOrigin = true;
-
-              if (widget.position != null) {
-                // _gettingAddress = false;
-                
-                widget.mapController?.animateCamera(
-                  CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                      target: LatLng(
-                          widget.position!.latitude!,
-                          widget.position!.longitude!),
-                      zoom: 16,
-
-                    ),
-                  ),
-                );
-
-              }
-            },
             onChanged: (_) {
               _showAutocomplete = true;
             },

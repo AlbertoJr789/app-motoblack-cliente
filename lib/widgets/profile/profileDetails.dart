@@ -37,46 +37,17 @@ class _ProfileDetailsState extends State<ProfileDetails> {
       final pic = _picture is XFile ? _picture : null;
       Map<String, dynamic> ret = await _controller.saveProfile(
           _name.text, _phone.text, _email.text, pic);
+      
       if (ret['error'] == false) {
-        FToast().init(context).showToast(
-            child: MyToast(
-              msg: const Text(
-                'Dados de perfil atualizados com sucesso.',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              icon: const Icon(
-                Icons.check,
-                color: Colors.white,
-              ),
-              color: Colors.greenAccent,
-            ),
-            gravity: ToastGravity.BOTTOM,
-            toastDuration: const Duration(seconds: 4));
+        toastSuccess(context, 'Dados de perfil atualizados com sucesso.');
       } else {
-        FToast().init(context).showToast(
-            child: MyToast(
-              msg: Text(
-                ret['status'] == 422
-                    ? ret['error']
-                    : 'Erro ao atualizar dados de perfil, tente novamente mais tarde.',
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-              icon: const Icon(
-                Icons.error,
-                color: Colors.white,
-              ),
-              color: Colors.redAccent,
-            ),
-            gravity: ToastGravity.BOTTOM,
-            toastDuration: const Duration(seconds: 5));
+        toastError(context, ret['status'] == 422 ? ret['error'] : 'Erro ao atualizar dados de perfil, tente novamente mais tarde.');
       }
+
       setState(() {
         _isSaving = false;
       });
+
     }
   }
 

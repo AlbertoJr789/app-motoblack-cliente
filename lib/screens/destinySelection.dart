@@ -17,7 +17,7 @@ class DestinySelection extends StatefulWidget {
 
   final TextEditingController origin = TextEditingController();
   final TextEditingController destiny = TextEditingController();
-  
+
   //vallidation control
   final originKey = GlobalKey<FormFieldState<String>>();
   final destinyKey = GlobalKey<FormFieldState<String>>();
@@ -31,12 +31,10 @@ class DestinySelection extends StatefulWidget {
 }
 
 class _DestinySelectionState extends State<DestinySelection> {
-
   //map address flags
   bool _gettingAddress = false;
   bool _autoFill = true;
 
-  
   bool _selectingOrigin = false;
   bool _selectingDestiny = true;
 
@@ -50,6 +48,8 @@ class _DestinySelectionState extends State<DestinySelection> {
       DestinySelectionController();
 
   final _formKey = GlobalKey<FormState>();
+
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -76,12 +76,45 @@ class _DestinySelectionState extends State<DestinySelection> {
       _selectingOrigin = true;
       _selectingDestiny = false;
     });
+
     widget.originfocusNode.addListener(() {
-      setState(() {});
+      if (widget.originfocusNode.hasFocus) {
+        _animatePosition(_originPosition!);
+      }
+      setState(() {}); //to show clear button on right side of text field so use can clear text
     });
+
     widget.destinyfocusNode.addListener(() {
-      setState(() {});
+      if (widget.destinyfocusNode.hasFocus) {
+          _animatePosition(_destinyPosition!);
+      }
+      setState(() {}); //to show clear button on right side of text field so use can clear text
     });
+
+  }
+
+  void _animatePosition(Address position) {
+    
+    if (widget.destinyfocusNode.hasFocus) {
+      _selectingOrigin = false;
+      _selectingDestiny = true;
+    }else{
+      _selectingOrigin = true;
+      _selectingDestiny = false;
+    }
+
+    _gettingAddress = false;
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: LatLng(position.latitude!, position.longitude!), zoom: 16),
+      ),
+    ).then((value) {
+       if (_debounce?.isActive ?? false) _debounce?.cancel();
+        _debounce = Timer(const Duration(milliseconds: 500), () async {
+          _gettingAddress = true;
+        });
+    });
+
   }
 
   @override
@@ -103,11 +136,28 @@ class _DestinySelectionState extends State<DestinySelection> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        AddressAutoComplete(textController: widget.origin, focusNode: widget.originfocusNode, formFieldKey: widget.originKey, mapController: _mapController),
+                        AddressAutoComplete(
+                            textController: widget.origin,
+                            focusNode: widget.originfocusNode,
+                            formFieldKey: widget.originKey,
+                            position: _originPosition,
+                            onSelected: (address) {
+                              _originPosition = address;
+                              _animatePosition(_originPosition!);
+                            }),
                         const SizedBox(
                           height: 10,
                         ),
-                        AddressAutoComplete(textController: widget.destiny, focusNode: widget.destinyfocusNode, formFieldKey: widget.destinyKey, mapController: _mapController),
+                        AddressAutoComplete(
+                            textController: widget.destiny,
+                            focusNode: widget.destinyfocusNode,
+                            formFieldKey: widget.destinyKey,
+                            position: _destinyPosition,
+                            onSelected: (address) {
+                              _destinyPosition = address;
+                              _animatePosition(_destinyPosition!);
+                            }),
+
                       ],
                     ),
                   ),
@@ -123,9 +173,6 @@ class _DestinySelectionState extends State<DestinySelection> {
                 onCameraMove: (position) {
                   _currentPosition = position;
                 },
-                // onCameraMoveStarted: () {
-                // _gettingAddress = true;
-                // },
                 onCameraIdle: _getAddress,
                 onMapCreated: (controller) {
                   _mapController = controller;
@@ -134,7 +181,10 @@ class _DestinySelectionState extends State<DestinySelection> {
               AutoFillButton(onChanged: (value) {
                 _autoFill = value;
               }),
-              InitTripButton(originPosition: _originPosition, destinyPosition: _destinyPosition, formKey: _formKey),
+              InitTripButton(
+                  originPosition: _originPosition,
+                  destinyPosition: _destinyPosition,
+                  formKey: _formKey),
               const Center(
                 child: Icon(
                   Icons.add_location,
@@ -150,34 +200,33 @@ class _DestinySelectionState extends State<DestinySelection> {
   }
 
   void _getAddress() async {
+    print('getAddress: $_gettingAddress');
     if (_gettingAddress && _autoFill) {
-        if (widget.firstAddress == false) {
-          if (_selectingOrigin) {
-            widget.origin.text = "Carregando...";
-          } else if (_selectingDestiny) {
-            widget.destiny.text = "Carregando...";
-          }
+      if (widget.firstAddress == false) {
+        if (_selectingOrigin) {
+          widget.origin.text = "Carregando...";
+        } else if (_selectingDestiny) {
+          widget.destiny.text = "Carregando...";
         }
+      }
 
       _destinySelectionController
           .getAddress(_currentPosition!.target.latitude,
               _currentPosition!.target.longitude)
           .then((address) {
-              if (widget.firstAddress == false) {
-                if (_selectingOrigin) {
-                  widget.origin.text = address.formattedAddress;
-                  _originPosition = address;
-                  widget.originKey.currentState!.validate();                   
-                } else if (_selectingDestiny) {
-                  widget.destiny.text = address.formattedAddress;
-                  _destinyPosition = address;
-                  widget.destinyKey.currentState!.validate();           
-                }
-              } else {
-                widget.origin.text = address.formattedAddress;
-                widget.firstAddress = false;
-                _originPosition = address;
-              }
+        if (widget.firstAddress == false) {
+          if (_selectingOrigin) {
+            widget.origin.text = address.formattedAddress;
+            _originPosition = address;
+          } else if (_selectingDestiny) {
+            widget.destiny.text = address.formattedAddress;
+            _destinyPosition = address;
+          }
+        } else {
+          widget.origin.text = address.formattedAddress;
+          widget.firstAddress = false;
+          _originPosition = address;
+        }
       }).catchError((e) {
         showAlert(
             context,
@@ -188,8 +237,6 @@ class _DestinySelectionState extends State<DestinySelection> {
     }
     _gettingAddress = true;
   }
-
-
 
   @override
   void dispose() {
