@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 class InitTripButton extends StatefulWidget {
   const InitTripButton({super.key, required this.originPosition, required this.destinyPosition, required this.formKey});
 
-  final Address? originPosition;
-  final Address? destinyPosition;
+  final Address? Function() originPosition;
+  final Address? Function() destinyPosition;
   final GlobalKey<FormState> formKey;
   
   @override
@@ -29,7 +29,7 @@ class _InitTripButtonState extends State<InitTripButton> {
       });
 
       Map<String, dynamic> response = await _activityController.initActivity(
-          widget.originPosition!, widget.destinyPosition!, 1);
+          widget.originPosition()!, widget.destinyPosition()!, 1);
 
       if (response['error'] == false) {
         if (context.mounted) {

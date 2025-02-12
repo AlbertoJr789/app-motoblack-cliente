@@ -12,6 +12,9 @@ class AddressAutoComplete extends StatefulWidget {
   final FocusNode focusNode;
   final GlobalKey<FormFieldState>? formFieldKey;
   final Function(Address) onSelected;
+  final String hintText;
+  final String labelText;
+
 
   AddressAutoComplete({
     super.key,
@@ -20,6 +23,8 @@ class AddressAutoComplete extends StatefulWidget {
     required this.focusNode,
     this.formFieldKey,
     required this.onSelected,
+    required this.hintText,
+    required this.labelText,
   });
 
   @override
@@ -123,8 +128,8 @@ class _AddressAutoCompleteState extends State<AddressAutoComplete> {
             focusNode: fn,
             key: widget.formFieldKey,
             decoration: InputDecoration(
-              hintText: "De onde ?",
-              labelText: "Origem",
+              hintText: widget.hintText,
+              labelText: widget.labelText,
               suffixIcon: _searching
                   ? const Padding(
                       padding: EdgeInsets.all(8.0),

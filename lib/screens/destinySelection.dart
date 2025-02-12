@@ -6,6 +6,7 @@ import 'package:app_motoblack_cliente/widgets/assets/toast.dart';
 import 'package:app_motoblack_cliente/widgets/destinySelection/addressAutoComplete.dart';
 import 'package:app_motoblack_cliente/widgets/destinySelection/autoFillButton.dart';
 import 'package:app_motoblack_cliente/widgets/destinySelection/initTripButton.dart';
+import 'package:app_motoblack_cliente/widgets/trip/tripIcon.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -50,6 +51,8 @@ class _DestinySelectionState extends State<DestinySelection> {
   final _formKey = GlobalKey<FormState>();
 
   Timer? _debounce;
+
+  List<Marker> _markers = [];
 
   @override
   void initState() {
@@ -117,6 +120,29 @@ class _DestinySelectionState extends State<DestinySelection> {
 
   }
 
+  void _setMarkers() async{
+    
+    _markers.clear();
+    
+    if(_originPosition != null){
+      _markers.add(Marker(
+        markerId: const MarkerId('origin'),
+        position: LatLng(_originPosition!.latitude!, _originPosition!.longitude!),
+        icon: await createFlagBitmapFromIcon(Icon(Icons.flag,color: Theme.of(context).colorScheme.secondary)),
+      ));
+    }
+
+    if(_destinyPosition != null){
+      _markers.add(Marker(
+        markerId: const MarkerId('destiny'),
+        position: LatLng(_destinyPosition!.latitude!, _destinyPosition!.longitude!),
+          icon: await createFlagBitmapFromIcon(Icon(Icons.flag_circle_rounded,color: Theme.of(context).colorScheme.surface,)),
+        ));
+    }
+    setState(() {});
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,9 +168,13 @@ class _DestinySelectionState extends State<DestinySelection> {
                             formFieldKey: widget.originKey,
                             position: _originPosition,
                             onSelected: (address) {
-                              _originPosition = address;
-                              _animatePosition(_originPosition!);
-                            }),
+                                _originPosition = address;
+                                _animatePosition(_originPosition!);
+                                _setMarkers();
+                            },
+                            hintText: "De onde ?",
+                            labelText: "Origem",
+                        ),
                         const SizedBox(
                           height: 10,
                         ),
@@ -156,8 +186,11 @@ class _DestinySelectionState extends State<DestinySelection> {
                             onSelected: (address) {
                               _destinyPosition = address;
                               _animatePosition(_destinyPosition!);
-                            }),
-
+                              _setMarkers();
+                            },
+                            hintText: "Para onde ?",
+                            labelText: "Destino",
+                        ),
                       ],
                     ),
                   ),
@@ -177,18 +210,19 @@ class _DestinySelectionState extends State<DestinySelection> {
                 onMapCreated: (controller) {
                   _mapController = controller;
                 },
+                markers: Set<Marker>.of(_markers),
               ),
               AutoFillButton(onChanged: (value) {
                 _autoFill = value;
               }),
               InitTripButton(
-                  originPosition: _originPosition,
-                  destinyPosition: _destinyPosition,
+                  originPosition: () => _originPosition,
+                  destinyPosition: () => _destinyPosition,
                   formKey: _formKey),
               const Center(
                 child: Icon(
                   Icons.add_location,
-                  size: 40,
+                  size: 30,
                   color: Colors.black87,
                 ),
               )
@@ -200,7 +234,7 @@ class _DestinySelectionState extends State<DestinySelection> {
   }
 
   void _getAddress() async {
-    print('getAddress: $_gettingAddress');
+
     if (_gettingAddress && _autoFill) {
       if (widget.firstAddress == false) {
         if (_selectingOrigin) {
@@ -234,6 +268,7 @@ class _DestinySelectionState extends State<DestinySelection> {
             "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
             e.toString());
       });
+      _setMarkers();
     }
     _gettingAddress = true;
   }
