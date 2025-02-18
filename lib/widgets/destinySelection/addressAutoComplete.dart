@@ -145,8 +145,8 @@ class _AddressAutoCompleteState extends State<AddressAutoComplete> {
                           : null,
                           
                       child: fn.hasFocus
-                          ? const Icon(Icons.close_rounded)
-                          : const Icon(Icons.search),
+                          ?  Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.secondary,)
+                          : Icon(Icons.search, color: Theme.of(context).colorScheme.secondary,),
                     ),
               focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(

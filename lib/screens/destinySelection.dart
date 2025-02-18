@@ -36,10 +36,9 @@ class _DestinySelectionState extends State<DestinySelection> {
   bool _gettingAddress = false;
   bool _autoFill = true;
 
-  bool _selectingOrigin = false;
-  bool _selectingDestiny = true;
+  bool _selectingOrigin = true;
+  bool _selectingDestiny = false;
 
-  CameraPosition? _currentPosition;
   GoogleMapController? _mapController;
 
   Address? _originPosition;
@@ -53,10 +52,15 @@ class _DestinySelectionState extends State<DestinySelection> {
   Timer? _debounce;
 
   List<Marker> _markers = [];
+  List<Polyline> _polylines = [];
+  
+  BitmapDescriptor? _iconOrigin;
+  BitmapDescriptor? _iconDestiny;
 
   @override
   void initState() {
     super.initState();
+    
     widget.origin.text = "Obtendo sua localização...";
     _destinySelectionController.getUserLocation().then((value) {
       _mapController?.animateCamera(
@@ -66,10 +70,14 @@ class _DestinySelectionState extends State<DestinySelection> {
             zoom: 16,
           ),
         ),
-      );
-      _currentPosition =
-          CameraPosition(target: LatLng(value.latitude, value.longitude));
-      _getAddress();
+      ).then((value) {
+       Future.delayed(const Duration(seconds: 1), () {
+         setState(() {
+           _selectingDestiny = true;
+           _selectingOrigin = false;
+         });
+       });
+      });
     }).catchError((error, stackTrace) {
       showAlert(
           context,
@@ -95,6 +103,7 @@ class _DestinySelectionState extends State<DestinySelection> {
     });
 
   }
+
 
   void _animatePosition(Address position) {
     
@@ -128,7 +137,7 @@ class _DestinySelectionState extends State<DestinySelection> {
       _markers.add(Marker(
         markerId: const MarkerId('origin'),
         position: LatLng(_originPosition!.latitude!, _originPosition!.longitude!),
-        icon: await createFlagBitmapFromIcon(Icon(Icons.flag,color: Theme.of(context).colorScheme.secondary)),
+        icon: _iconOrigin ??= await createFlagBitmapFromIcon(Icon(Icons.flag,color: Theme.of(context).colorScheme.secondary)),
       ));
     }
 
@@ -136,9 +145,25 @@ class _DestinySelectionState extends State<DestinySelection> {
       _markers.add(Marker(
         markerId: const MarkerId('destiny'),
         position: LatLng(_destinyPosition!.latitude!, _destinyPosition!.longitude!),
-          icon: await createFlagBitmapFromIcon(Icon(Icons.flag_circle_rounded,color: Theme.of(context).colorScheme.surface,)),
+          icon: _iconDestiny ??= await createFlagBitmapFromIcon(Icon(Icons.flag_circle_rounded,color: Theme.of(context).colorScheme.surface,)),
         ));
     }
+    
+    _polylines.clear();
+    if (_originPosition != null && _destinyPosition != null) {
+      _polylines.add(
+        Polyline(
+          polylineId: const PolylineId('route'),
+          points: [
+            LatLng(_originPosition!.latitude!, _originPosition!.longitude!),
+            LatLng(_destinyPosition!.latitude!, _destinyPosition!.longitude!),
+          ],
+          color: Theme.of(context).colorScheme.secondary,
+          width: 4,
+        ),
+      );     
+    }
+
     setState(() {});
   }
 
@@ -155,7 +180,7 @@ class _DestinySelectionState extends State<DestinySelection> {
             Material(
               child: Container(
                 width: double.infinity,
-                color: const Color.fromARGB(255, 197, 179, 88),
+                color: Theme.of(context).colorScheme.surface,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Form(
@@ -204,13 +229,23 @@ class _DestinySelectionState extends State<DestinySelection> {
                 initialCameraPosition: const CameraPosition(
                     target: LatLng(-20.4630769, -45.4443985), zoom: 16),
                 onCameraMove: (position) {
-                  _currentPosition = position;
+                  if(_autoFill){
+                    if(_selectingDestiny){
+                      _destinyPosition = Address(latitude: position.target.latitude, longitude: position.target.longitude);
+                    }else{
+                      _originPosition = Address(latitude: position.target.latitude, longitude: position.target.longitude);
+                    }
+                   _setMarkers();
+                  }
                 },
-                onCameraIdle: _getAddress,
+                onCameraIdle: () {
+                  _getAddress();
+                },
                 onMapCreated: (controller) {
                   _mapController = controller;
                 },
                 markers: Set<Marker>.of(_markers),
+                polylines: Set<Polyline>.of(_polylines),
               ),
               AutoFillButton(onChanged: (value) {
                 _autoFill = value;
@@ -219,13 +254,13 @@ class _DestinySelectionState extends State<DestinySelection> {
                   originPosition: () => _originPosition,
                   destinyPosition: () => _destinyPosition,
                   formKey: _formKey),
-              const Center(
-                child: Icon(
-                  Icons.add_location,
-                  size: 30,
-                  color: Colors.black87,
-                ),
-              )
+              // const Center(
+              //   child: Icon(
+              //     Icons.add_location,
+              //     size: 50,
+              //     color: Colors.black87,
+              //   ),
+              // )
             ]),
           ),
         ],
@@ -236,38 +271,42 @@ class _DestinySelectionState extends State<DestinySelection> {
   void _getAddress() async {
 
     if (_gettingAddress && _autoFill) {
-      if (widget.firstAddress == false) {
-        if (_selectingOrigin) {
-          widget.origin.text = "Carregando...";
-        } else if (_selectingDestiny) {
-          widget.destiny.text = "Carregando...";
-        }
+    
+      if (_selectingOrigin) {
+        widget.origin.text = "Carregando...";
+        
+        _destinySelectionController
+            .getAddress(_originPosition!.latitude!,
+                _originPosition!.longitude!)
+            .then((address) {
+              widget.origin.text = address.formattedAddress;
+              _originPosition = address;
+        }).catchError((e) {
+          showAlert(
+              context,
+              "Erro ao obter endereço no mapa!",
+              "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
+              e.toString());
+        });
+    
+      } else if (_selectingDestiny) {
+        widget.destiny.text = "Carregando...";
+         
+        _destinySelectionController
+            .getAddress(_destinyPosition!.latitude!,
+                _destinyPosition!.longitude!)
+            .then((address) {
+              widget.destiny.text = address.formattedAddress;
+              _destinyPosition = address;
+        }).catchError((e) {
+          showAlert(
+              context,
+              "Erro ao obter endereço no mapa!",
+              "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
+              e.toString());
+        });
       }
-
-      _destinySelectionController
-          .getAddress(_currentPosition!.target.latitude,
-              _currentPosition!.target.longitude)
-          .then((address) {
-        if (widget.firstAddress == false) {
-          if (_selectingOrigin) {
-            widget.origin.text = address.formattedAddress;
-            _originPosition = address;
-          } else if (_selectingDestiny) {
-            widget.destiny.text = address.formattedAddress;
-            _destinyPosition = address;
-          }
-        } else {
-          widget.origin.text = address.formattedAddress;
-          widget.firstAddress = false;
-          _originPosition = address;
-        }
-      }).catchError((e) {
-        showAlert(
-            context,
-            "Erro ao obter endereço no mapa!",
-            "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
-            e.toString());
-      });
+    
       _setMarkers();
     }
     _gettingAddress = true;

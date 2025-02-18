@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-const _primaryColor = const Color.fromARGB(255, 197, 179, 88);
+const _primaryColor = const Color.fromARGB(255, 255, 215, 88);
 const _sencondaryColor =  const Color.fromARGB(255, 3, 3, 3);
 const _dangerColor = Color.fromARGB(210, 182, 21, 21);
 const _inversePrimary = Color.fromARGB(255, 216, 216, 216);
