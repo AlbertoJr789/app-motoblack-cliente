@@ -30,6 +30,8 @@ class _TripState extends State<Trip> {
   final DraggableScrollableController _scrollController =
       DraggableScrollableController();
   List<Marker> _markers = [];
+  List<Polyline> _polylines = [];
+
   BitmapDescriptor? _agentIcon;
   late Agent? _tempAgent;
 
@@ -54,6 +56,32 @@ class _TripState extends State<Trip> {
 
   _drawAgent() async {
     _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
+    
+    _markers.add(Marker(
+        markerId: const MarkerId('origin'),
+        position: LatLng(_controller.currentActivity!.origin.latitude!,
+            _controller.currentActivity!.origin.longitude!),
+        icon: await createFlagBitmapFromIcon(Icon(Icons.flag,color: Theme.of(context).colorScheme.secondary)),
+        infoWindow: const InfoWindow(title: 'Ponto de partida (fique próximo dessa área)'),
+        ));
+    
+    _markers.add(Marker(
+        markerId: const MarkerId('destiny'),
+        position: LatLng(_controller.currentActivity!.destiny.latitude!,
+            _controller.currentActivity!.destiny.longitude!),
+        icon: await createFlagBitmapFromIcon(Icon(Icons.flag_circle_rounded,color: Theme.of(context).colorScheme.surface,)),
+        infoWindow: const InfoWindow(title: 'Ponto de destino'),
+        ));
+
+    _polylines.add(Polyline(
+        width: 4,
+        polylineId: const PolylineId('origin-destiny'),
+        points: [LatLng(_controller.currentActivity!.origin.latitude!,
+            _controller.currentActivity!.origin.longitude!),
+        LatLng(_controller.currentActivity!.destiny.latitude!,
+            _controller.currentActivity!.destiny.longitude!)],
+        color: Theme.of(context).colorScheme.secondary));
+
     _tripStream = FirebaseDatabase.instance
         .ref('trips')
         .child(_controller.currentActivity!.uuid!)
@@ -61,20 +89,19 @@ class _TripState extends State<Trip> {
         .listen((querySnapshot) async {
       final data = querySnapshot.snapshot.value as Map;
       if (data['agent'].containsKey('id')) {
-        
         _tripStream.cancel();
         _controller.currentActivity!.agent = _tempAgent;
         _manageTrip();
         setState(() {});
-        
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          
-          toastSuccess(context, 'Corrida iniciada! Confira mais detalhes acima.');
-          
+          toastSuccess(
+              context, 'Corrida iniciada! Confira mais detalhes acima.');
+
           _scrollController.animateTo(0.4,
               duration: const Duration(milliseconds: 500),
               curve: Curves.easeInOut);
-          
+
           Future.delayed(const Duration(seconds: 4), () {
             _scrollController.animateTo(0.075,
                 duration: const Duration(milliseconds: 500),
@@ -136,7 +163,7 @@ class _TripState extends State<Trip> {
         .onValue
         .listen((querySnapshot) async {
       final data = querySnapshot.snapshot.value as Map;
-      _markers.clear();
+      _markers.removeWhere((marker) => marker.markerId.value == 'agent');
       _markers.add(Marker(
           markerId: const MarkerId('agent'),
           position: LatLng(data['latitude'], data['longitude']),
@@ -220,6 +247,7 @@ class _TripState extends State<Trip> {
                             _controller.currentActivity!.origin.longitude!),
                         zoom: 16),
                     markers: Set<Marker>.of(_markers),
+                    polylines: Set<Polyline>.of(_polylines),
                   ),
                 ),
                 Align(
@@ -393,7 +421,6 @@ class _TripState extends State<Trip> {
 
   @override
   void dispose() {
-    
     try {
       _tripStream.cancel();
     } catch (e) {}
@@ -401,7 +428,7 @@ class _TripState extends State<Trip> {
     try {
       _agentStream.cancel();
     } catch (e) {}
-    
+
     try {
       _locationListener.cancel();
     } catch (e) {}
