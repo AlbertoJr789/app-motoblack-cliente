@@ -31,6 +31,7 @@ class _TripState extends State<Trip> {
       DraggableScrollableController();
   List<Marker> _markers = [];
   List<Polyline> _polylines = [];
+  bool _showMap = true;
 
   BitmapDescriptor? _agentIcon;
   late Agent? _tempAgent;
@@ -235,12 +236,14 @@ class _TripState extends State<Trip> {
             child: Stack(
               fit: StackFit.expand,
               children: [
+                if (_showMap)
                 Container(
                   width: double.infinity,
                   // height: 200,
                   child: GoogleMap(
                     myLocationEnabled: true,
                     myLocationButtonEnabled: true,
+                    zoomControlsEnabled: false,
                     initialCameraPosition: CameraPosition(
                         target: LatLng(
                             _controller.currentActivity!.origin.latitude!,
@@ -248,26 +251,10 @@ class _TripState extends State<Trip> {
                         zoom: 16),
                     markers: Set<Marker>.of(_markers),
                     polylines: Set<Polyline>.of(_polylines),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: ElevatedButton.icon(
-                    onPressed: _endTripDialog,
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.white,
                     ),
-                    label: const Text(
-                      "Cancelar",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.red), // Set the background color of the icon
-                    ),
-                  ),
-                ),
+                  ),   
+
+                
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: DraggableScrollableSheet(
@@ -314,6 +301,84 @@ class _TripState extends State<Trip> {
                     },
                   ),
                 ),
+                 Positioned(
+                  bottom: 10.0,
+                  right: 10.0,
+                  child: Tooltip(
+                    message: 'Esconder/Exibir Mapa',
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        setState(() {
+                          _showMap = !_showMap;
+                        });
+                      },
+                      child: Icon(
+                        _showMap ? Icons.map : Icons.map_outlined,
+                        color: Colors.white,
+                      ),
+                      backgroundColor: Colors.blue,
+                    ),
+                  ),
+                ),
+                if (_showMap)
+                    Positioned(
+                      top: 30.0,
+                      left: 0.0,
+                      right: 0.0,
+                      child: Center(
+                        child: ElevatedButton.icon(
+                          onPressed: _endTripDialog,
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
+                          label: const Text(
+                            "Cancelar",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.red), // Set the background color of the icon
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    Positioned(
+                      top: 20.0,
+                      left: 0.0,
+                      right: 0.0,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        color: Theme.of(context).colorScheme.surface,
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Corrida em andamento. Ative o mapa para ver o ${_controller.currentActivity!.agentActivityType}.",
+                              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                              textAlign: TextAlign.center,
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: _endTripDialog,
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                              label: const Text(
+                                "Cancelar",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(
+                                    Colors.red), // Set the background color of the icon
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
               ],
             ),
           );
