@@ -72,4 +72,5 @@ class Address {
     return formattedAddress;
   }
 
+  bool get addressComplete => street != null && zipCode != null;
 }

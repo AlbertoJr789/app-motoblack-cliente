@@ -254,13 +254,6 @@ class _DestinySelectionState extends State<DestinySelection> {
                   originPosition: () => _originPosition,
                   destinyPosition: () => _destinyPosition,
                   formKey: _formKey),
-              // const Center(
-              //   child: Icon(
-              //     Icons.add_location,
-              //     size: 50,
-              //     color: Colors.black87,
-              //   ),
-              // )
             ]),
           ),
         ],
@@ -279,6 +272,7 @@ class _DestinySelectionState extends State<DestinySelection> {
             .getAddress(_originPosition!.latitude!,
                 _originPosition!.longitude!)
             .then((address) {
+              print(address.formattedAddress + address.zipCode!);
               widget.origin.text = address.formattedAddress;
               _originPosition = address;
         }).catchError((e) {
@@ -296,6 +290,7 @@ class _DestinySelectionState extends State<DestinySelection> {
             .getAddress(_destinyPosition!.latitude!,
                 _destinyPosition!.longitude!)
             .then((address) {
+              print(address.formattedAddress + address.zipCode!);
               widget.destiny.text = address.formattedAddress;
               _destinyPosition = address;
         }).catchError((e) {

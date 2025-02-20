@@ -32,9 +32,9 @@ class _ActivitiesState extends State<Activities> {
     loadActivities();
   }
 
-  loadActivities() async {
+  loadActivities({bool reset=false}) async {
     _isLoading.value = true;
-    await controller.getActivities();
+    await controller.getActivities(reset);
     _isLoading.value = false;
   }
 
@@ -59,7 +59,7 @@ class _ActivitiesState extends State<Activities> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: loadActivities,
+            onPressed: () => loadActivities(reset: true),
           ),
         ]
       ),

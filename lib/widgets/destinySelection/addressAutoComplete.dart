@@ -160,7 +160,7 @@ class _AddressAutoCompleteState extends State<AddressAutoComplete> {
             validator: (value) {
               if (value == null ||
                   value.isEmpty ||
-                  widget.position == null) {
+                  widget.position == null || !widget.position!.addressComplete) {
                 return 'Endereço inválido!';
               }
               return null;
