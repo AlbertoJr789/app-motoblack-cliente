@@ -112,6 +112,24 @@ class ActivityController extends ChangeNotifier {
     }
   }
 
+  Future<bool> finishActivity({Activity? trip,double? evaluation,String? evaluationComment}) async {
+    try {
+      Response response = await apiClient.dio.patch(
+        '/api/activity/${trip!.id}',
+        options: Options(
+          headers: {
+            'accept': 'application/json',
+          },
+        ),
+        data: {'evaluation': evaluation,'evaluationComment': evaluationComment}
+      );
+      removeCurrentActivity();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   //activity disk persistance, in case user closes the app
   storeCurrentActivity(Map<String,dynamic> data) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
