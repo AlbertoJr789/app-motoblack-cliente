@@ -197,6 +197,14 @@ class _DestinySelectionState extends State<DestinySelection> {
                                 _animatePosition(_originPosition!);
                                 _setMarkers();
                             },
+                            onValidate: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  _originPosition == null || !_originPosition!.addressComplete) {
+                                return 'Endereço inválido!';
+                              }
+                              return null;
+                            },
                             hintText: "De onde ?",
                             labelText: "Origem",
                         ),
@@ -212,6 +220,15 @@ class _DestinySelectionState extends State<DestinySelection> {
                               _destinyPosition = address;
                               _animatePosition(_destinyPosition!);
                               _setMarkers();
+                            },
+                            onValidate: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  _destinyPosition == null || !_destinyPosition!.addressComplete) {
+                                return 'Endereço inválido!';
+                              }
+                              return null;
+
                             },
                             hintText: "Para onde ?",
                             labelText: "Destino",

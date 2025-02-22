@@ -14,7 +14,7 @@ class AddressAutoComplete extends StatefulWidget {
   final Function(Address) onSelected;
   final String hintText;
   final String labelText;
-
+  final Function(String?) onValidate;
 
   AddressAutoComplete({
     super.key,
@@ -23,6 +23,7 @@ class AddressAutoComplete extends StatefulWidget {
     required this.focusNode,
     this.formFieldKey,
     required this.onSelected,
+    required this.onValidate,
     required this.hintText,
     required this.labelText,
   });
@@ -158,13 +159,7 @@ class _AddressAutoCompleteState extends State<AddressAutoComplete> {
               _showAutocomplete = true;
             },
             validator: (value) {
-              if (value == null ||
-                  value.isEmpty ||
-                  widget.position == null || !widget.position!.addressComplete) {
-                return 'Endereço inválido!';
-              }
-              return null;
-
+              widget.onValidate(value);
             },
           );
         },

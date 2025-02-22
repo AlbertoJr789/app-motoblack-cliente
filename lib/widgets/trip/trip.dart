@@ -35,154 +35,16 @@ class _TripState extends State<Trip> {
 
   BitmapDescriptor? _agentIcon;
   late Agent? _tempAgent;
+  
+  bool _allowConclusion = false;
+  double _acceptableRadius = 30;
+
 
   @override
   void initState() {
     super.initState();
     _controller = Provider.of<ActivityController>(context, listen: false);
     _drawAgent();
-  }
-
-  _createMarkerIcon() async {
-    try {
-      final String url =
-          '${ApiClient.instance.baseUrl}/api/marker/${_controller.currentActivity!.agent!.userId}';
-      _agentIcon = await getMarkerImageFromUrl(url, targetWidth: 120);
-      setState(() {});
-    } catch (e) {
-      _agentIcon = BitmapDescriptor.defaultMarker;
-      setState(() {});
-    }
-  }
-
-  _drawAgent() async {
-    _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
-    
-    _markers.add(Marker(
-        markerId: const MarkerId('origin'),
-        position: LatLng(_controller.currentActivity!.origin.latitude!,
-            _controller.currentActivity!.origin.longitude!),
-        icon: await createFlagBitmapFromIcon(Icon(Icons.flag,color: Theme.of(context).colorScheme.secondary)),
-        infoWindow: const InfoWindow(title: 'Ponto de partida (fique próximo dessa área)'),
-        ));
-    
-    _markers.add(Marker(
-        markerId: const MarkerId('destiny'),
-        position: LatLng(_controller.currentActivity!.destiny.latitude!,
-            _controller.currentActivity!.destiny.longitude!),
-        icon: await createFlagBitmapFromIcon(Icon(Icons.flag_circle_rounded,color: Theme.of(context).colorScheme.surface,)),
-        infoWindow: const InfoWindow(title: 'Ponto de destino'),
-        ));
-
-    _polylines.add(Polyline(
-        width: 4,
-        polylineId: const PolylineId('origin-destiny'),
-        points: [LatLng(_controller.currentActivity!.origin.latitude!,
-            _controller.currentActivity!.origin.longitude!),
-        LatLng(_controller.currentActivity!.destiny.latitude!,
-            _controller.currentActivity!.destiny.longitude!)],
-        color: Theme.of(context).colorScheme.secondary));
-
-    _tripStream = FirebaseDatabase.instance
-        .ref('trips')
-        .child(_controller.currentActivity!.uuid!)
-        .onValue
-        .listen((querySnapshot) async {
-      final data = querySnapshot.snapshot.value as Map;
-      if (data['agent'].containsKey('id')) {
-        _tripStream.cancel();
-        _controller.currentActivity!.agent = _tempAgent;
-        _manageTrip();
-        setState(() {});
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          toastSuccess(
-              context, 'Corrida iniciada! Confira mais detalhes acima.');
-
-          _scrollController.animateTo(0.4,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeInOut);
-
-          Future.delayed(const Duration(seconds: 4), () {
-            _scrollController.animateTo(0.075,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.easeInOut);
-          });
-        });
-        return;
-      }
-      if (data['agent']['accepting'] == false) {
-        _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
-      }
-    });
-  }
-
-  _manageTrip() async {
-    await _createMarkerIcon();
-
-    _tripStream = FirebaseDatabase.instance
-        .ref('trips')
-        .child(_controller.currentActivity!.uuid!)
-        .onValue
-        .listen((querySnapshot) async {
-      if (querySnapshot.snapshot.exists) {
-        final data = querySnapshot.snapshot.value as Map;
-        if (data['cancelled'] == true && data['whoCancelled'] == 'a') {
-          _controller.cancelActivity(alreadyCancelled: true);
-          _tripStream.cancel();
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text('Corrida cancelada pelo agente !'),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text('Motivo: ${data['cancellingReason']}'),
-                ],
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-          return;
-        }
-      }
-    });
-
-    _agentStream = FirebaseDatabase.instance
-        .ref('availableAgents')
-        .child(_controller.currentActivity!.agent!.uuid!)
-        .onValue
-        .listen((querySnapshot) async {
-      final data = querySnapshot.snapshot.value as Map;
-      _markers.removeWhere((marker) => marker.markerId.value == 'agent');
-      _markers.add(Marker(
-          markerId: const MarkerId('agent'),
-          position: LatLng(data['latitude'], data['longitude']),
-          icon: _agentIcon!,
-          infoWindow: InfoWindow(
-              title: 'Seu ${_controller.currentActivity!.agent!.typeName}')));
-      setState(() {});
-    });
-
-    _locationListener =
-        Geolocator.getPositionStream().listen((Position position) {
-      FirebaseDatabase.instance
-          .ref('trips')
-          .child(_controller.currentActivity!.uuid!)
-          .child('passenger')
-          .update(
-              {'latitude': position.latitude, 'longitude': position.longitude});
-    });
   }
 
   @override
@@ -251,6 +113,17 @@ class _TripState extends State<Trip> {
                         zoom: 16),
                     markers: Set<Marker>.of(_markers),
                     polylines: Set<Polyline>.of(_polylines),
+                    circles: {
+                      Circle(
+                        circleId: const CircleId('destination-area'),
+                        center: LatLng(_controller.currentActivity!.destiny.latitude!,
+                            _controller.currentActivity!.destiny.longitude!),
+                        radius: _acceptableRadius,
+                        strokeWidth: 2,
+                        strokeColor: _allowConclusion  ? Colors.green : Colors.red,
+                        fillColor: _allowConclusion ? Colors.greenAccent.withOpacity(0.2) : Colors.redAccent.withOpacity(0.2),
+                      ),
+                    },
                     ),
                   ),   
 
@@ -407,6 +280,202 @@ class _TripState extends State<Trip> {
       ),
     );
   }
+  
+  _createMarkerIcon() async {
+    try {
+      final String url =
+          '${ApiClient.instance.baseUrl}/api/marker/${_controller.currentActivity!.agent!.userId}';
+      _agentIcon = await getMarkerImageFromUrl(url, targetWidth: 120);
+      setState(() {});
+    } catch (e) {
+      print(e);
+      _agentIcon = BitmapDescriptor.defaultMarker;
+      setState(() {});
+    }
+  }
+
+  _drawAgent() async {
+    _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
+    _tripStatus();
+  }
+
+  _addMarkers() async {
+    final originMarker = Marker(
+      markerId: const MarkerId('origin'),
+      position: LatLng(_controller.currentActivity!.origin.latitude!,
+          _controller.currentActivity!.origin.longitude!),
+      icon: await createFlagBitmapFromIcon(Icon(Icons.flag, color: Theme.of(context).colorScheme.secondary)),
+      infoWindow: const InfoWindow(title: 'Ponto de partida (fique próximo dessa área)'),
+    );
+
+    final destinyMarker = Marker(
+      markerId: const MarkerId('destiny'),
+      position: LatLng(_controller.currentActivity!.destiny.latitude!,
+          _controller.currentActivity!.destiny.longitude!),
+      icon: await createFlagBitmapFromIcon(Icon(Icons.flag_circle_rounded, color: Theme.of(context).colorScheme.surface)),
+      infoWindow: const InfoWindow(title: 'Ponto de destino'),
+    );
+
+    _markers.add(originMarker);
+    _markers.add(destinyMarker);
+
+    final polyline = Polyline(
+      width: 4,
+      polylineId: const PolylineId('origin-destiny'),
+      points: [
+        LatLng(_controller.currentActivity!.origin.latitude!,
+            _controller.currentActivity!.origin.longitude!),
+        LatLng(_controller.currentActivity!.destiny.latitude!,
+            _controller.currentActivity!.destiny.longitude!)
+      ],
+      color: Theme.of(context).colorScheme.secondary,
+    );
+    
+    _polylines.add(polyline);
+  }
+
+  _tripStatus() {
+    //TRIP STATUS
+    _tripStream = FirebaseDatabase.instance
+        .ref('trips')
+        .child(_controller.currentActivity!.uuid!)
+        .onValue
+        .listen((querySnapshot) async {
+      if (querySnapshot.snapshot.exists) {
+        final data = querySnapshot.snapshot.value as Map;
+
+        if(_controller.currentActivity!.agent == null){ //agent inst found yet
+            if (data['agent'].containsKey('id')) { //found agent who accepted the trip, initialize the trip
+              
+              _addMarkers();
+              _controller.currentActivity!.agent = _tempAgent;
+              
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                toastSuccess(
+                    context, 'Corrida iniciada! Confira mais detalhes acima.');
+
+                _scrollController.animateTo(0.4,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut);
+
+                Future.delayed(const Duration(seconds: 4), () {
+                  _scrollController.animateTo(0.075,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut);
+                });
+              });
+
+              //initialize position listeners
+              _agentStatus();
+              _myStatus();
+              setState(() {});
+              return;
+            }
+
+            if (data['agent']['accepting'] == false) {
+              _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
+              return;
+            }
+
+        }else{
+          if (data['cancelled'] == true && data['whoCancelled'] == 'a') { //listens for possible trip cancellation by agent
+            _controller.cancelActivity(alreadyCancelled: true);
+            _tripStream.cancel();
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Text('Corrida cancelada pelo agente !'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text('Motivo: ${data['cancellingReason']}'),
+                  ],
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+            return;
+          }
+        }
+      }else{
+        _tripStream.cancel();
+        _controller.cancelActivity(alreadyCancelled: true);
+        return;
+      }
+    });
+  }
+
+  _agentStatus() async {
+
+    await _createMarkerIcon();
+
+     //AGENT POSITION
+    _agentStream = FirebaseDatabase.instance
+        .ref('availableAgents')
+        .child(_controller.currentActivity!.agent!.uuid!)
+        .onValue
+        .listen((querySnapshot) async {
+            final data = querySnapshot.snapshot.value as Map;
+            _markers.removeWhere((marker) => marker.markerId.value == 'agent');
+            final agentMarker = Marker(
+              markerId: const MarkerId('agent'),
+              position: LatLng(data['latitude'], data['longitude']),
+              icon: _agentIcon!,
+              infoWindow: InfoWindow(
+                    title: 'Seu ${_controller.currentActivity!.agent!.typeName}'));
+            setState(() {
+              _markers.add(agentMarker);
+            });
+    });
+  }
+
+  _myStatus(){
+    //MY POSITION
+    _locationListener =
+        Geolocator.getPositionStream().listen((Position position) {
+      FirebaseDatabase.instance
+          .ref('trips')
+          .child(_controller.currentActivity!.uuid!)
+          .child('passenger')
+          .update(
+              {'latitude': position.latitude, 'longitude': position.longitude});
+      _checkRadius();
+    });
+  }
+
+
+  _checkRadius() {
+    final destination = _controller.currentActivity!.destiny;
+    final agentPosition = _markers.firstWhere((marker) => marker.markerId.value == 'agent').position;
+
+    Geolocator.getCurrentPosition().then((Position passengerPosition) {
+      
+      final passengerDistance = Geolocator.distanceBetween(
+        passengerPosition.latitude,
+        passengerPosition.longitude,
+        destination.latitude!,
+        destination.longitude!,
+      );
+  
+      if (mounted) {
+        setState(() {
+          _allowConclusion = passengerDistance <= _acceptableRadius;
+        });
+      }
+    });
+  }
+
+
 
   TextEditingController _cancellingReason = TextEditingController();
   final _formCancelamentoKey = GlobalKey<FormState>();
