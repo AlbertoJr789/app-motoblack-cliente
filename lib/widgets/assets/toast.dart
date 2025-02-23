@@ -24,6 +24,12 @@ class MyToast extends StatelessWidget{
     msg = Text(title!,style: const TextStyle(color: Colors.white,),);
   }
 
+  MyToast.info({super.key, required this.title}) {
+    color = Colors.blueAccent;
+    icon = const Icon(Icons.info,color: Colors.white,);
+    msg = Text(title!,style: const TextStyle(color: Colors.white,),);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -57,6 +63,13 @@ toastSuccess(BuildContext context,String title){
 toastError(BuildContext context,String title){
   FToast().init(context).showToast(
       child: MyToast.error(title: title),
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: const Duration(seconds: 5));
+}
+
+toastInfo(BuildContext context,String title){
+  FToast().init(context).showToast(
+      child: MyToast.info(title: title),
       gravity: ToastGravity.BOTTOM,
       toastDuration: const Duration(seconds: 5));
 }

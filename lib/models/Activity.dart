@@ -28,10 +28,11 @@ class Activity {
   Address origin;
   Address destiny;
   double? price;
-  int? evaluation;
+  double? evaluation;
   String? obs;
   String? route;
   bool? canceled;
+  int? whoCancelled;
   String? cancellingReason;
   DateTime? createdAt;
   DateTime? finishedAt;
@@ -51,6 +52,7 @@ class Activity {
       this.obs,
        this.canceled,
        this.route,
+       this.whoCancelled,
       this.cancellingReason,
        this.createdAt,
       this.finishedAt});
@@ -65,11 +67,12 @@ class Activity {
         origin: Address.fromJson(map['origin']),
         destiny: Address.fromJson(map['destiny']),
         price: map['price'] != null ? double.parse(map['price'].toString()) : null,
-        evaluation: map['passengerEvaluation'],
+        evaluation: map['passengerEvaluation'] != null ? double.parse(map['passengerEvaluation'].toString()) : null,
         route: map['route'],
         canceled: map['cancelled'] == 1 ? true : false,
         obs: map['passengerObs'],
         cancellingReason: map['cancellingReason'],
+        whoCancelled: map['whoCancelled'],
         createdAt: DateTime.parse(map['createdAt']),
         finishedAt: map['finishedAt'] != null ? DateTime.parse(map['finishedAt']) : null
         );

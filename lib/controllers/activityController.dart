@@ -121,7 +121,7 @@ class ActivityController extends ChangeNotifier {
             'accept': 'application/json',
           },
         ),
-        data: {'evaluation': evaluation,'evaluationComment': evaluationComment}
+        data: {'nota_agente': evaluation,'obs_passageiro': evaluationComment}
       );
       removeCurrentActivity();
       return true;

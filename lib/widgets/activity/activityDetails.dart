@@ -281,8 +281,9 @@ class _ActivityDetailsState extends State<ActivityDetails> {
         ),
         RatingBar(
           ignoreGestures: true,
-          initialRating: double.parse(activity.evaluation.toString()),
+          initialRating: activity.evaluation,
           itemCount: 5,
+          allowHalfRating: true,
           ratingWidget: RatingWidget(
               full: const Icon(Icons.star, color: Colors.amber),
               half: const Icon(Icons.star_half, color: Colors.amber),

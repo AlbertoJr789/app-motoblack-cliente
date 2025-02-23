@@ -116,6 +116,9 @@ class _TripState extends State<Trip> {
                       circles: {
                         Circle(
                           circleId: const CircleId('destination-area'),
+                          onTap: (){
+                            toastInfo(context, 'Fique neste raio para conseguir concluir a corrida, entenderemos que você chegou próximo ao seu destino');
+                          },
                           center: LatLng(
                               _controller.currentActivity!.destiny.latitude!,
                               _controller.currentActivity!.destiny.longitude!),
@@ -126,6 +129,7 @@ class _TripState extends State<Trip> {
                           fillColor: _allowConclusion
                               ? Colors.greenAccent.withOpacity(0.2)
                               : Colors.redAccent.withOpacity(0.2),
+
                         ),
                       },
                     ),
