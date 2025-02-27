@@ -2,7 +2,7 @@
 //generic function that shows a dialog
 import 'package:flutter/material.dart';
 
-void showAlert(BuildContext context,String message, String sol, String error) {
+void showAlert(BuildContext context,String message, {String? sol,String? error}) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(

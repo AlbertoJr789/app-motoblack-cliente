@@ -17,7 +17,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class Trip extends StatefulWidget {
-  Trip({super.key});
+  const Trip({super.key});
 
   @override
   State<Trip> createState() => _TripState();
@@ -369,40 +369,9 @@ class _TripState extends State<Trip> {
                 await _controller.drawAgent(_controller.currentActivity!);
             return;
           }
-        } else {
-          if (data['cancelled'] == true && data['whoCancelled'] == 'a') {
-            //listens for possible trip cancellation by agent
-            _controller.cancelActivity(alreadyCancelled: true);
-            _tripStream.cancel();
-            showDialog(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text('Corrida cancelada pelo agente !'),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text('Motivo: ${data['cancellingReason']}'),
-                  ],
-                ),
-                actions: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              ),
-            );
-            return;
-          }
         }
       } else {
-        _tripStream.cancel();
-        _controller.cancelActivity(alreadyCancelled: true);
+        _controller.toggleTrip(enabled: true);
         return;
       }
     });
@@ -447,10 +416,7 @@ class _TripState extends State<Trip> {
 
   _checkRadius() {
     final destination = _controller.currentActivity!.destiny;
-    final agentPosition = _markers
-        .firstWhere((marker) => marker.markerId.value == 'agent')
-        .position;
-
+   
     Geolocator.getCurrentPosition().then((Position passengerPosition) {
       final passengerDistance = Geolocator.distanceBetween(
         passengerPosition.latitude,
