@@ -134,32 +134,32 @@ class ActivityController extends ChangeNotifier {
   }
 
   checkCurrentActivity() async {    
-    if(currentActivity == null){
-      //get pendent activity from API
-      final response = await Activity.getActivities(unrated: true);
-      if (response.data['success']) {
-          final data = response.data['data']['result'];
-          try{
-            currentActivity = Activity.fromJson(data[0]);
-          }catch(e){
-            currentActivity = null;
-          }
-      } else {
-        throw response.data['message'];
-      }
+    //get pendent activity from API
+    final response = await Activity.getActivities(unrated: true);
+    if (response.data['success']) {
+        final data = response.data['data']['result'];
+        try{
+          currentActivity = Activity.fromJson(data[0]);
+        }catch(e){
+          currentActivity = null;
+        }
+    } else {
+      throw response.data['message'];
     }
   }
 
-  toggleTrip({bool enabled = true}){
+  toggleTrip({bool enabled = true,bool notify = false}){
     _enableTrip = enabled;
-    notifyListeners();
+    if(notify){
+      notifyListeners();
+    }
   }
 
   get enableTrip => _enableTrip;
 
-  removeCurrentActivity() async {
+  removeCurrentActivity({bool notify = true}) async {
     currentActivity = null;
-    notifyListeners();
+    toggleTrip(enabled: true,notify: notify);
   }
 
 }

@@ -77,7 +77,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
       }
     }).catchError((error) {
       showAlert(context, "Erro ao tirar sua foto!",
-          "Verifique as permissões dadas ao aplicativo.", error.toString());
+          sol: "Verifique as permissões dadas ao aplicativo.", error: error.toString());
     });
   }
 

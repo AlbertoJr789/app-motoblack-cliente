@@ -22,35 +22,34 @@ class _HomeState extends State<Home> {
   late ActivityController _tripController;
   bool _showTrip = true;
   bool _error = false;
+  bool _isCheckingActivity = false;
+
 
   @override
   void initState() {
     super.initState();
     _tripController = Provider.of<ActivityController>(context, listen: false);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-        _checkActivity();
-    });
   }
 
-    _checkActivity() async {
+  _checkActivity() async {
     try{
 
-      if(_tripController.currentActivity == null){
-        await _tripController.checkCurrentActivity();
-        _error = false;
-      }
+      await _tripController.checkCurrentActivity();
+      _error = false;
 
       if(_tripController.currentActivity != null){
-        if(_tripController.currentActivity!.whoCancelled == WhoCancelled.agent && _tripController.checkCancelled){
+        if(_tripController.currentActivity!.whoCancelled == WhoCancelled.agent){
           showAlert(context, 'A corrida foi cancelada pelo agente', sol: 'Motivo: ${_tripController.currentActivity!.cancellingReason}');
-          _tripController.removeCurrentActivity();
         }else{
-          if(_tripController.currentActivity!.finishedAt != null){
+          if(_tripController.currentActivity!.finishedAt != null && _tripController.currentActivity!.canceled == false){
             _ratePendentTripDialog();
-            _showTrip = false;
+            _tripController.toggleTrip(enabled: false);
+            return;
           }
         }
       }
+      _tripController.removeCurrentActivity(notify: false);
+      _isCheckingActivity = false;
     }catch(e){
       _error = true;
     }
@@ -60,13 +59,14 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     _tripController = context.watch<ActivityController>();
 
-    if(!_tripController.enableTrip){
-      // WidgetsBinding.instance.addPostFrameCallback((_) {
-        _checkActivity();
-      // });
+    if(!_tripController.enableTrip && !_isCheckingActivity){
+      _isCheckingActivity = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+          _checkActivity();
+      });
     }
-
-     Widget widget;
+  
+    Widget widget;
     if(_error){
         widget = ErrorMessage(msg: 'Houve um erro ao tentar verificar seus status', tryAgainAction: _checkActivity);
     }else{
@@ -102,7 +102,7 @@ class _HomeState extends State<Home> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             widget
@@ -207,8 +207,9 @@ final _formDialogKey = GlobalKey<FormState>();
                   } else {
                     Navigator.pop(ctx);
                     toastSuccess(context,
-                        'Corrida concluída com sucesso! Agradecemos pelo serviço prestado!');
+                        'Corrida concluída com sucesso! Agradecemos pela preferência!');
                     _tripController.removeCurrentActivity();
+                    _isCheckingActivity = false;
                   }
                 }
               },

@@ -82,8 +82,8 @@ class _DestinySelectionState extends State<DestinySelection> {
       showAlert(
           context,
           'Tivemos um erro ao obter sua localização!',
-          'Digite seu ponto de origem manualmente ou selecione-o no mapa.',
-          error.toString());
+          sol: 'Digite seu ponto de origem manualmente ou selecione-o no mapa.',
+          error: error.toString());
       _selectingOrigin = true;
       _selectingDestiny = false;
     });
@@ -296,8 +296,8 @@ class _DestinySelectionState extends State<DestinySelection> {
           showAlert(
               context,
               "Erro ao obter endereço no mapa!",
-              "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
-              e.toString());
+              sol: "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
+              error: e.toString());
         });
     
       } else if (_selectingDestiny) {
@@ -314,8 +314,8 @@ class _DestinySelectionState extends State<DestinySelection> {
           showAlert(
               context,
               "Erro ao obter endereço no mapa!",
-              "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
-              e.toString());
+              sol: "Digite o endereço aproximado para que possamos definir o ponto de origem/destino ou tente novamente mais tarde.",
+              error: e.toString());
         });
       }
     
