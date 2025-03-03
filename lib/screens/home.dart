@@ -20,7 +20,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   late ActivityController _tripController;
-  bool _showTrip = true;
   bool _error = false;
   bool _isCheckingActivity = false;
 
@@ -50,6 +49,7 @@ class _HomeState extends State<Home> {
       }
       _tripController.removeCurrentActivity(notify: false);
       _isCheckingActivity = false;
+      _error = false;
     }catch(e){
       _error = true;
     }

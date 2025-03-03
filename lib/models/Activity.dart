@@ -23,9 +23,9 @@ ActivityType activityTypeToEnum(int type) {
 WhoCancelled whoCancelledToEnum(int whoCancelled) {
   switch (whoCancelled) {
     case 1:
-      return WhoCancelled.passenger;
-    case 2: 
       return WhoCancelled.agent;
+    case 2: 
+      return WhoCancelled.passenger;
     default:
       return WhoCancelled.unknown;
   }
@@ -108,10 +108,13 @@ class Activity {
     }
   }
 
- static Future<Response> getActivities({int page=1,bool unrated=false}) async {
+ static Future<Response> getActivities({int page=1,bool unrated=false,bool cancelled=false}) async {
     var queryParameters = {'page': page};
     if(unrated){
       queryParameters['unrated'] = 1;
+    }
+    if(cancelled){
+      queryParameters['cancelled'] = 1;
     }
     return await apiClient.dio.get(
         '/api/activity',

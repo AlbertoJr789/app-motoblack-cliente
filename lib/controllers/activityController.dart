@@ -15,8 +15,8 @@ class ActivityController extends ChangeNotifier {
   List<Activity> activities = [];
 
   Activity? currentActivity;
-  bool checkCancelled = true;
-  bool _enableTrip = true;
+  bool checkCancelled = false;
+  bool _enableTrip = false;
 
 
   static final ApiClient apiClient = ApiClient.instance;
@@ -135,13 +135,19 @@ class ActivityController extends ChangeNotifier {
 
   checkCurrentActivity() async {    
     //get pendent activity from API
-    final response = await Activity.getActivities(unrated: true);
+    final response = await Activity.getActivities(unrated: checkCancelled == true ? false : true,cancelled: checkCancelled);
     if (response.data['success']) {
         final data = response.data['data']['result'];
         try{
           currentActivity = Activity.fromJson(data[0]);
         }catch(e){
-          currentActivity = null;
+          if(checkCancelled){
+            checkCancelled = false;
+            checkCurrentActivity();
+            return;
+          }else{
+            currentActivity = null;
+          }
         }
     } else {
       throw response.data['message'];
