@@ -129,12 +129,12 @@ final _formDialogKey = GlobalKey<FormState>();
             child: Column(
               children: [
                 Text(
-                  'Ooops, você não avaliou a sua última corrida!',
+                  'Ooops, parece que o responsável pela sua última corrida finalizou a mesma e você ainda não fez a avaliação!',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  'Sua opinião é muito importante para nós! Por gentileza, avalie o passageiro:',
+                  'Sua opinião é muito importante para nós! Por gentileza, avalie o nosso serviço:',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
@@ -159,8 +159,8 @@ final _formDialogKey = GlobalKey<FormState>();
                   ),
                   validator: (value) {
                     if (_evaluation == 0) {
-                      toastError(context, 'Por gentileza, avalie o passageiro');
-                      return 'Por gentileza, avalie o passageiro';
+                        toastError(context, 'Por gentileza, avalie o serviço');
+                        return 'Por gentileza, avalie o serviço';
                     }
                     return null;
                   },

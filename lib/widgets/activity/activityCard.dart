@@ -13,7 +13,7 @@ class ActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String title =
-        '${activity.typeName} ${DateFormat('dd/MM/y H:m').format(activity.createdAt!)}';
+        '${activity.typeName} ${DateFormat('dd/MM/y HH:mm').format(activity.createdAt!)}';
     String addr = '${activity.origin.street} ${activity.origin.number}';
     return Material(
       color: Colors.transparent,
@@ -67,7 +67,7 @@ class ActivityCard extends StatelessWidget {
                       errorWidget: (context, url, error) {
                           return const Icon(Icons.person_off_outlined);
                       },
-                      imageUrl: activity.agent!.avatar!),
+                      imageUrl: activity.agent!.avatar ?? ''),
                 ),
               // CircleAvatar(
               //   radius: 30,

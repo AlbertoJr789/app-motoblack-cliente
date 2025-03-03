@@ -371,8 +371,10 @@ class _TripState extends State<Trip> {
           }
         }
       } else {
+        if(_dialogLoading == false){
          _controller.checkCancelled = _controller.currentActivity!.id!;
         _controller.toggleTrip(enabled: false,notify: true);
+        }
       }
     });
   }
@@ -502,24 +504,10 @@ class _TripState extends State<Trip> {
                     _dialogLoading = false;
                   });
                   if (!ret) {
-                    FToast().init(context).showToast(
-                        child: MyToast(
-                          msg: const Text(
-                            'Houve um erro ao cancelar sua corrida! Tente novamente.',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.error,
-                            color: Colors.white,
-                          ),
-                          color: Colors.redAccent,
-                        ),
-                        gravity: ToastGravity.BOTTOM,
-                        toastDuration: const Duration(seconds: 5));
+                    toastError(context, 'Houve um erro ao cancelar sua corrida! Tente novamente.');
                   } else {
                     Navigator.pop(ctx);
+                    toastSuccess(context, 'Corrida cancelada com sucesso!');
                   }
                 }
               },
@@ -646,6 +634,7 @@ class _TripState extends State<Trip> {
 
   @override
   void dispose() {
+    print('disposex');
     try {
       _tripStream.cancel();
     } catch (e) {}

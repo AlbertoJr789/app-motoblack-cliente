@@ -327,7 +327,7 @@ class _ActivityDetailsState extends State<ActivityDetails> {
                       const CircularProgressIndicator(),
                   errorWidget: (context, url, error) =>
                       const Icon(Icons.person_off_outlined,color: Colors.black,),
-                  imageUrl: agent.avatar!),
+                  imageUrl: agent.avatar ?? ''),
             ),
             Text(agent.name),
           ],
