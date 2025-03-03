@@ -39,6 +39,7 @@ class _HomeState extends State<Home> {
       if(_tripController.currentActivity != null){
         if(_tripController.currentActivity!.whoCancelled == WhoCancelled.agent){
           showAlert(context, 'A corrida foi cancelada pelo agente', sol: 'Motivo: ${_tripController.currentActivity!.cancellingReason}');
+          _tripController.checkCancelled = 0;
         }else{
           if(_tripController.currentActivity!.finishedAt != null && _tripController.currentActivity!.canceled == false){
             _ratePendentTripDialog();

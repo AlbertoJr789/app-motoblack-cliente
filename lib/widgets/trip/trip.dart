@@ -371,7 +371,7 @@ class _TripState extends State<Trip> {
           }
         }
       } else {
-        _controller.checkCancelled = true;
+         _controller.checkCancelled = _controller.currentActivity!.id!;
         _controller.toggleTrip(enabled: false,notify: true);
       }
     });
