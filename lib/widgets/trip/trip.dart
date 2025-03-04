@@ -40,11 +40,15 @@ class _TripState extends State<Trip> {
   bool _allowConclusion = false;
   double _acceptableRadius = 30;
 
+  int maxTries = 5;
+  Duration maxTriesDuration = Duration(seconds: 30);
+
   @override
   void initState() {
     super.initState();
     _controller = Provider.of<ActivityController>(context, listen: false);
     _drawAgent();
+    _tripStatus();
   }
 
   @override
@@ -276,15 +280,40 @@ class _TripState extends State<Trip> {
       _agentIcon = await getMarkerImageFromUrl(url, targetWidth: 120);
       setState(() {});
     } catch (e) {
-      print(e);
       _agentIcon = BitmapDescriptor.defaultMarker;
       setState(() {});
     }
   }
 
   _drawAgent() async {
-    _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
-    _tripStatus();
+    
+    if(_controller.currentActivity != null){
+      if(_controller.currentActivity!.agent != null) return;
+      _tempAgent = await _controller.drawAgent(_controller.currentActivity!);
+    }
+
+    if(_tempAgent == null){
+      if(maxTries > 0){
+        maxTries--;
+        Timer(maxTriesDuration, () { //try again after 20 seconds
+          _drawAgent();
+        });
+        return;
+      }else{
+        if(mounted){
+          toastError(context, 'Não foi possível encontrar um ${_controller.currentActivity!.agentActivityType} próximo a você. Por favor, tente novamente mais tarde.');
+        }
+        if(_controller.currentActivity != null){
+          _controller.cancelActivity(trip: _controller.currentActivity!, reason: '404');
+        }
+      }
+    }else{
+
+       Timer(maxTriesDuration, () { //cooldown to try for another agent even if the current one hasnt accepted yet, 
+          _drawAgent();
+        });
+        return;
+    }
   }
 
   _addMarkers() async {
@@ -326,6 +355,17 @@ class _TripState extends State<Trip> {
   }
 
   _tripStatus() {
+
+    //init agent location
+    FirebaseDatabase.instance
+        .ref('trips')
+        .child(_controller.currentActivity!.uuid!)
+        .child('agent').get().then((value) async {
+          if(value.exists){
+            _agentStatus();
+          }
+        });
+
     //TRIP STATUS
     _tripStream = FirebaseDatabase.instance
         .ref('trips')
@@ -340,8 +380,8 @@ class _TripState extends State<Trip> {
           if (data['agent'].containsKey('id')) {
             //found agent who accepted the trip, initialize the trip
 
-            _addMarkers();
             _controller.currentActivity!.agent = _tempAgent;
+            _controller.currentActivity!.vehicle = _tempAgent!.vehicle;
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
               toastSuccess(
@@ -365,15 +405,17 @@ class _TripState extends State<Trip> {
           }
 
           if (data['agent']['accepting'] == false) {
-            _tempAgent =
-                await _controller.drawAgent(_controller.currentActivity!);
+            _drawAgent();
             return;
           }
         }
       } else {
         if(_dialogLoading == false){
-         _controller.checkCancelled = _controller.currentActivity!.id!;
-        _controller.toggleTrip(enabled: false,notify: true);
+          _tripStream.cancel();
+          _agentStream.cancel();
+          _locationListener.cancel();
+          _controller.checkCancelled = _controller.currentActivity!.id!;
+          _controller.toggleTrip(enabled: false,notify: true);
         }
       }
     });
@@ -381,6 +423,7 @@ class _TripState extends State<Trip> {
 
   _agentStatus() async {
     await _createMarkerIcon();
+    await _addMarkers();
 
     //AGENT POSITION
     _agentStream = FirebaseDatabase.instance
@@ -634,7 +677,6 @@ class _TripState extends State<Trip> {
 
   @override
   void dispose() {
-    print('disposex');
     try {
       _tripStream.cancel();
     } catch (e) {}

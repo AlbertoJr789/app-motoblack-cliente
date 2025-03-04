@@ -146,73 +146,75 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              const Center(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: Colors.white60,
-                        thickness: 0.5,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text(
-                        'Ou, se preferir',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            decoration: TextDecoration.none),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: Colors.white60,
-                        thickness: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    _telaPrincipal(context);
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/logos/google.svg',
-                    semanticsLabel: 'logoGoogle',
-                    height: 18,
-                    width: 18,
-                  ),
-                  label: const Text(
-                    'Entre com o Google',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 4.0,
-              ),
-              Container(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    _telaPrincipal(context);
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/logos/facebook.svg',
-                    semanticsLabel: 'logoFacebook',
-                    height: 18,
-                    width: 18,
-                  ),
-                  label: const Text(
-                    'Entre com o Facebook',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
+              
+              // const Center(
+              //   child: Row(
+              //     children: [
+              //       Expanded(
+              //         child: Divider(
+              //           color: Colors.white60,
+              //           thickness: 0.5,
+              //         ),
+              //       ),
+              //       Padding(
+              //         padding: EdgeInsets.all(12.0),
+              //         child: Text(
+              //           'Ou, se preferir',
+              //           style: TextStyle(
+              //               color: Colors.white,
+              //               fontSize: 16,
+              //               decoration: TextDecoration.none),
+              //         ),
+              //       ),
+              //       Expanded(
+              //         child: Divider(
+              //           color: Colors.white60,
+              //           thickness: 0.5,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              //   Container(
+              //   width: double.infinity,
+              //   child: ElevatedButton.icon(
+              //     onPressed: () {
+              //       _telaPrincipal(context);
+              //     },
+              //     icon: SvgPicture.asset(
+              //       'assets/logos/google.svg',
+              //       semanticsLabel: 'logoGoogle',
+              //       height: 18,
+              //       width: 18,
+              //     ),
+              //     label: const Text(
+              //       'Entre com o Google',
+              //       style: TextStyle(fontSize: 18),
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(
+              //   height: 4.0,
+              // ),
+              //   Container(
+              //   width: double.infinity,
+              //   child: ElevatedButton.icon(
+              //     onPressed: () {
+              //       _telaPrincipal(context);
+              //     },
+              //     icon: SvgPicture.asset(
+              //       'assets/logos/facebook.svg',
+              //       semanticsLabel: 'logoFacebook',
+              //       height: 18,
+              //       width: 18,
+              //     ),
+              //     label: const Text(
+              //       'Entre com o Facebook',
+              //       style: TextStyle(fontSize: 18),
+              //     ),
+              //   ),
+              // ),
+          
             ]),
           ),
         ),

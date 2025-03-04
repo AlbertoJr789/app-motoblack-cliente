@@ -32,7 +32,7 @@ class TripAgentDetails extends StatelessWidget {
                             Icons.person_off_outlined,
                             color: Colors.black,
                           ),
-                      imageUrl: activity.agent!.avatar!),
+                      imageUrl: activity.agent!.avatar ?? ''),
                 ),
                 Text(activity.agent!.name)
               ],
@@ -45,26 +45,26 @@ class TripAgentDetails extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      activity.agent!.vehicle!.icon,
+                      activity.vehicle!.icon,
                       color: Color(int.parse(
-                        '0xFF${activity.agent!.vehicle!.color.toString().replaceFirst('#', '')}',
+                        '0xFF${activity.vehicle!.color.toString().replaceFirst('#', '')}',
                       )),
                       size: 70,
                     ),
                     Column(
                       children: [
                         Text(
-                            '${activity.agent!.vehicle!.brand} - ${activity.agent!.vehicle!.model}'),
+                            '${activity.vehicle!.brand} - ${activity.vehicle!.model}'),
                         Row(
                           children: [
                             Text(
-                                'Placa: ${activity.agent!.vehicle!.plate}, Cor: '),
+                                'Placa: ${activity.vehicle!.plate}, Cor: '),
                             SizedBox(
                               width: 20,
                               height: 20,
                               child: Container(
                                 color: Color(int.parse(
-                                  '0xFF${activity.agent!.vehicle!.color.toString().replaceFirst('#', '')}',
+                                  '0xFF${activity.vehicle!.color.toString().replaceFirst('#', '')}',
                                 )),
                               ),
                             ),

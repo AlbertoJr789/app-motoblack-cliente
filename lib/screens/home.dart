@@ -36,19 +36,31 @@ class _HomeState extends State<Home> {
       await _tripController.checkCurrentActivity();
       _error = false;
 
-      if(_tripController.currentActivity != null){
-        if(_tripController.currentActivity!.whoCancelled == WhoCancelled.agent){
-          showAlert(context, 'A corrida foi cancelada pelo agente', sol: 'Motivo: ${_tripController.currentActivity!.cancellingReason}');
-          _tripController.checkCancelled = 0;
+       if(_tripController.currentActivity != null){
+
+        if(_tripController.currentActivity!.canceled == true){
+           if(_tripController.currentActivity!.whoCancelled == WhoCancelled.agent){
+              String reason = _tripController.currentActivity!.cancellingReason ?? 'Não informado';
+              _tripController.removeCurrentActivity();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showAlert(context, 
+                    'A corrida foi cancelada pelo agente', 
+                    sol: 'Motivo: $reason');
+              });
+          }
         }else{
-          if(_tripController.currentActivity!.finishedAt != null && _tripController.currentActivity!.canceled == false){
+          if(_tripController.currentActivity!.finishedAt != null){
             _ratePendentTripDialog();
-            _tripController.toggleTrip(enabled: false);
             return;
+          }else{
+            _tripController.toggleTrip(enabled: true);
           }
         }
+      }else{
+        _tripController.toggleTrip(enabled: true);
       }
-      _tripController.removeCurrentActivity(notify: false);
+
+
       _isCheckingActivity = false;
       _error = false;
     }catch(e){
@@ -211,6 +223,8 @@ final _formDialogKey = GlobalKey<FormState>();
                         'Corrida concluída com sucesso! Agradecemos pela preferência!');
                     _tripController.removeCurrentActivity();
                     _isCheckingActivity = false;
+                    _evaluation = 0;
+                    _obs.clear();
                   }
                 }
               },

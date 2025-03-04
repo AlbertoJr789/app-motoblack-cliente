@@ -289,7 +289,6 @@ class _DestinySelectionState extends State<DestinySelection> {
             .getAddress(_originPosition!.latitude!,
                 _originPosition!.longitude!)
             .then((address) {
-              print(address.formattedAddress + address.zipCode!);
               widget.origin.text = address.formattedAddress;
               _originPosition = address;
         }).catchError((e) {
@@ -307,7 +306,6 @@ class _DestinySelectionState extends State<DestinySelection> {
             .getAddress(_destinyPosition!.latitude!,
                 _destinyPosition!.longitude!)
             .then((address) {
-              print(address.formattedAddress + address.zipCode!);
               widget.destiny.text = address.formattedAddress;
               _destinyPosition = address;
         }).catchError((e) {
