@@ -1,4 +1,5 @@
 import 'package:app_motoblack_cliente/models/Activity.dart';
+import 'package:app_motoblack_cliente/widgets/assets/photoWithRate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -20,20 +21,7 @@ class TripAgentDetails extends StatelessWidget {
             ),
             Column(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(25.0),
-                  child: CachedNetworkImage(
-                      fit: BoxFit.cover,
-                      width: 50,
-                      height: 50,
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => const Icon(
-                            Icons.person_off_outlined,
-                            color: Colors.black,
-                          ),
-                      imageUrl: activity.agent!.avatar ?? ''),
-                ),
+                PhotoWithRate(avatar: activity.agent!.avatar, rate: activity.agent!.rate,size: 75),
                 Text(activity.agent!.name)
               ],
             ),

@@ -22,9 +22,10 @@ class Agent {
   String name;
   Address? currentLocation;
   String? avatar;
+  double? rate;
   Vehicle? vehicle;
 
-  Agent({this.id,this.uuid,required this.name,this.userId,this.currentLocation, this.avatar,this.vehicle});
+  Agent({this.id,this.uuid,required this.name,this.userId,this.currentLocation, this.avatar,this.vehicle,this.rate});
 
   factory Agent.fromJson(Map<String, dynamic> map) {
     return Agent(
@@ -33,7 +34,8 @@ class Agent {
         userId: map['user_id'],
         name: map['name'],
         avatar: map['avatar'], 
-        vehicle: map['vehicle'] != null ? Vehicle.fromJson(map['vehicle']) : null
+        vehicle: map['vehicle'] != null ? Vehicle.fromJson(map['vehicle']) : null,
+        rate: map['rate']
         );
   }
 
