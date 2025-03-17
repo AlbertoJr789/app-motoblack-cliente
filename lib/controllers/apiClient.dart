@@ -10,7 +10,7 @@ class ApiClient {
   ApiClient._(){
     dio.options.connectTimeout = const Duration(seconds: 2);
     dio.options.receiveTimeout = const Duration(seconds: 3);
-    dio.options.baseUrl = 'http://10.0.0.41:8000';
+    dio.options.baseUrl = 'http://10.0.0.46:8000';
     dio.options.responseType = ResponseType.json;
     dio.interceptors.add( //wrapper that will be called upon every request
       InterceptorsWrapper(
