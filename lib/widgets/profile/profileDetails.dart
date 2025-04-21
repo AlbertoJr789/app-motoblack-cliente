@@ -275,20 +275,20 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                                     _saveProfile(context);
                                   }
                                 : null,
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.save,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                             label: !_isSaving
-                                ? const Text(
+                                ? Text(
                                     'Salvar',
                                     style: TextStyle(
-                                        fontSize: 18, color: Colors.white),
+                                        fontSize: 18, color: Theme.of(context).colorScheme.secondary),
                                   )
-                                : const Padding(
+                                : Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: CircularProgressIndicator(
-                                      color: Colors.black,
+                                      color: Theme.of(context).colorScheme.secondary,
                                     ),
                                   ),
                           ),

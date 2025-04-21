@@ -433,12 +433,13 @@ class _TripState extends State<Trip> {
         .listen((querySnapshot) async {
       final data = querySnapshot.snapshot.value as Map;
       _markers.removeWhere((marker) => marker.markerId.value == 'agent');
+
       final agentMarker = Marker(
           markerId: const MarkerId('agent'),
           position: LatLng(data['latitude'], data['longitude']),
           icon: _agentIcon!,
           infoWindow: InfoWindow(
-              title: 'Seu ${_controller.currentActivity!.agent!.typeName}'));
+              title: 'Seu ${_controller.currentActivity!.vehicle!.agentType}'));
       setState(() {
         _markers.add(agentMarker);
       });

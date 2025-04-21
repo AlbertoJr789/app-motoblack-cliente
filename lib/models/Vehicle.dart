@@ -47,6 +47,14 @@ class Vehicle {
     }
   }
 
+  String get agentType {
+    switch(type){
+      case VehicleType.motorcycle: return 'Motoblack';
+      case VehicleType.car: return 'Motorista';
+      default: return '';
+    }
+  }
+
   IconData get icon {
     switch(type){
       case VehicleType.motorcycle: return Icons.motorcycle;

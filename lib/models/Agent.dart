@@ -35,7 +35,7 @@ class Agent {
         name: map['name'],
         avatar: map['avatar'], 
         vehicle: map['vehicle'] != null ? Vehicle.fromJson(map['vehicle']) : null,
-        rate: map['rate']
+        rate: map['rate'] != null ? double.parse(map['rate'].toString()) : null
         );
   }
 
