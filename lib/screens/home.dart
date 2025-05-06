@@ -9,6 +9,8 @@ import 'package:app_motoblack_cliente/widgets/trip/trip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:app_motoblack_cliente/controllers/destinySelectionController.dart';
+import 'package:app_motoblack_cliente/widgets/assets/weatherDisplay.dart';
 
 class Home extends StatefulWidget {
 
@@ -22,6 +24,7 @@ class _HomeState extends State<Home> {
   late ActivityController _tripController;
   bool _error = false;
   bool _isCheckingActivity = false;
+
 
 
   @override
@@ -106,6 +109,8 @@ class _HomeState extends State<Home> {
                   iconColor: Colors.black),
               readOnly: true,
             ),
+            const SizedBox(height: 20),
+            WeatherDisplay(),
             const SizedBox(height: 20),
             const Expanded(
               child: Align(
