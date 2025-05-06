@@ -110,7 +110,7 @@ class _HomeState extends State<Home> {
               readOnly: true,
             ),
             const SizedBox(height: 20),
-            WeatherDisplay(),
+            const WeatherDisplay(),
             const SizedBox(height: 20),
             const Expanded(
               child: Align(

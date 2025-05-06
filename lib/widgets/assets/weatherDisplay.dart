@@ -73,7 +73,7 @@ class _WeatherDisplayState extends State<WeatherDisplay> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const CircularProgressIndicator();
+      return Center(child: const CircularProgressIndicator());
     }
     if (_error != null) {
       return const Text('');
