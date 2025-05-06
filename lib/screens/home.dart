@@ -1,10 +1,10 @@
-
 import 'package:app_motoblack_cliente/controllers/activityController.dart';
 import 'package:app_motoblack_cliente/models/Activity.dart';
 import 'package:app_motoblack_cliente/screens/destinySelection.dart';
 import 'package:app_motoblack_cliente/util/util.dart';
 import 'package:app_motoblack_cliente/widgets/assets/errorMessage.dart';
 import 'package:app_motoblack_cliente/widgets/assets/toast.dart';
+import 'package:app_motoblack_cliente/widgets/assets/news_carousel.dart';
 import 'package:app_motoblack_cliente/widgets/trip/trip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -86,7 +86,10 @@ class _HomeState extends State<Home> {
       if(_tripController.currentActivity != null && _tripController.enableTrip){
         widget = const Trip();
       }else{
-        widget = TextField(
+        widget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
               onTap: () async {
                 FocusScope.of(context).unfocus();
                 final ret = await Navigator.of(context).push(
@@ -96,30 +99,34 @@ class _HomeState extends State<Home> {
                   _tripController.currentActivity = ret;
                   setState(() {});
                 }
-
               },
               decoration: const InputDecoration(
                   hintText: 'Vai pra onde?',
                   prefixIcon: Icon(Icons.search),
                   iconColor: Colors.black),
-                  readOnly: true,
-            );
+              readOnly: true,
+            ),
+            const SizedBox(height: 20),
+            const Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 16.0),
+                  child: NewsCarousel(),
+                ),
+              ),
+            ),
+          ],
+        );
       } 
     }
 
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            widget
-          ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: widget,
         ),
       ),
     );
