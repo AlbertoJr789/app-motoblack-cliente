@@ -39,7 +39,7 @@ class _WeatherDisplayState extends State<WeatherDisplay> {
     }
   }
 
-  String _getWeatherAnimation(String weather) {
+  Widget _getWeatherAnimation(String weather) {
     final userTime = DateTime.now().hour;
     switch (weather.toLowerCase()) {
       case 'clouds':
@@ -49,23 +49,27 @@ class _WeatherDisplayState extends State<WeatherDisplay> {
       case 'dust':
       case 'fog':{
         if(userTime > 18 || userTime < 6){
-          return 'moon_cloud';
+          return Lottie.asset('assets/weather/moon_cloud.json',height: 200);
         }else{
-          return 'sun_cloud';
+          return Lottie.asset('assets/weather/sun_cloud.json',height: 200);
         }
       }
       case 'rain':
       case 'drizzle':{
         if(userTime > 18 || userTime < 6){
-          return 'moon_rain';
+          return Lottie.asset('assets/weather/moon_rain.json',height: 200);
         }else{
-          return 'sun_rain';
+          return Lottie.asset('assets/weather/sun_rain.json',height: 200);
         }
       }
       case 'thunderstorm':
-        return 'thunder';
+        return Lottie.asset('assets/weather/thunder.json',height: 200);
       default:
-        return 'sun';
+        if(userTime > 18 || userTime < 6){
+          return Lottie.asset('assets/weather/moon.json',height: 200,);
+        }else{
+          return Lottie.asset('assets/weather/sun.json',height: 250);
+        }
     }
   }
 
@@ -96,7 +100,7 @@ class _WeatherDisplayState extends State<WeatherDisplay> {
               Text('$city',style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold,color: Colors.white),),
             ],
           ),
-          Lottie.asset('assets/weather/${_getWeatherAnimation(weather)}.json'),
+          _getWeatherAnimation(weather),
           Text('${temp.round()}°C',style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold,color: Colors.white),),
         ],
       ),
