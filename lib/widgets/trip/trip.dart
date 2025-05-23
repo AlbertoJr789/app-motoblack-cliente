@@ -15,6 +15,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttermocklocation/fluttermocklocation.dart';
 
 class Trip extends StatefulWidget {
   const Trip({super.key});
@@ -34,13 +35,15 @@ class _TripState extends State<Trip> {
   List<Polyline> _polylines = [];
   bool _showMap = true;
 
+  final _mock = Fluttermocklocation();
+
   BitmapDescriptor? _agentIcon;
   late Agent? _tempAgent;
 
   bool _allowConclusion = false;
   double _acceptableRadius = 30;
 
-  int maxTries = 5;
+  int maxTries = 10;
   Duration maxTriesDuration = Duration(seconds: 30);
 
   @override
@@ -48,6 +51,7 @@ class _TripState extends State<Trip> {
     super.initState();
     _controller = Provider.of<ActivityController>(context, listen: false);
     _drawAgent();
+    print('init viagem');
     _tripStatus();
   }
 
@@ -98,118 +102,155 @@ class _TripState extends State<Trip> {
               ),
             ),
           )
-        : Expanded(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (_showMap)
-                  Container(
-                    width: double.infinity,
-                    // height: 200,
-                    child: GoogleMap(
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                      zoomControlsEnabled: false,
-                      initialCameraPosition: CameraPosition(
-                          target: LatLng(
-                              _controller.currentActivity!.origin.latitude!,
-                              _controller.currentActivity!.origin.longitude!),
-                          zoom: 16),
-                      markers: Set<Marker>.of(_markers),
-                      polylines: Set<Polyline>.of(_polylines),
-                      circles: {
-                        Circle(
-                          circleId: const CircleId('destination-area'),
-                          onTap: (){
-                            toastInfo(context, 'Fique neste raio para conseguir concluir a corrida, entenderemos que você chegou próximo ao seu destino');
-                          },
-                          center: LatLng(
-                              _controller.currentActivity!.destiny.latitude!,
-                              _controller.currentActivity!.destiny.longitude!),
-                          radius: _acceptableRadius,
-                          strokeWidth: 2,
-                          strokeColor:
-                              _allowConclusion ? Colors.green : Colors.red,
-                          fillColor: _allowConclusion
-                              ? Colors.greenAccent.withOpacity(0.2)
-                              : Colors.redAccent.withOpacity(0.2),
-
-                        ),
+        : Stack(
+          fit: StackFit.expand,
+          children: [
+            if (_showMap)
+              Container(
+                width: double.infinity,
+                // height: 200,
+                child: GoogleMap(
+                  myLocationEnabled: true,
+        
+                  myLocationButtonEnabled: true,
+                  zoomControlsEnabled: false,
+                  initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                          _controller.currentActivity!.origin.latitude!,
+                          _controller.currentActivity!.origin.longitude!),
+                      zoom: 16),
+                  markers: Set<Marker>.of(_markers),
+                  polylines: Set<Polyline>.of(_polylines),
+                  circles: {
+                    Circle(
+                      circleId: const CircleId('destination-area'),
+                      onTap: (){
+                        toastInfo(context, 'Fique neste raio para conseguir concluir a corrida, entenderemos que você chegou próximo ao seu destino');
                       },
+                      center: LatLng(
+                          _controller.currentActivity!.destiny.latitude!,
+                          _controller.currentActivity!.destiny.longitude!),
+                      radius: _acceptableRadius,
+                      strokeWidth: 2,
+                      strokeColor:
+                          _allowConclusion ? Colors.green : Colors.red,
+                      fillColor: _allowConclusion
+                          ? Colors.greenAccent.withOpacity(0.2)
+                          : Colors.redAccent.withOpacity(0.2),
+        
                     ),
-                  ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: DraggableScrollableSheet(
-                    controller: _scrollController,
-                    maxChildSize: 0.3, // Max height relative to the screen
-                    minChildSize: 0.075, // Min height relative to the screen
-                    initialChildSize:
-                        0.075, // Initial height relative to the screen
-                    builder: (context, scrollController) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(20)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 10,
-                            ),
-                          ],
+                  },
+                ),
+              ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: DraggableScrollableSheet(
+                controller: _scrollController,
+                maxChildSize: 0.3, // Max height relative to the screen
+                minChildSize: 0.075, // Min height relative to the screen
+                initialChildSize:
+                    0.075, // Initial height relative to the screen
+                builder: (context, scrollController) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(20)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
                         ),
-                        child: SingleChildScrollView(
-                            controller: scrollController,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.black,
-                                    ),
-                                    width: 50,
-                                    height: 10,
-                                  ),
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.black,
                                 ),
-                                Text('Informações da Corrida'),
-                                TripAgentDetails(
-                                    activity: _controller.currentActivity!),
-                              ],
-                            )),
-                      );
-                    },
+                                width: 50,
+                                height: 10,
+                              ),
+                            ),
+                            Text('Informações da Corrida'),
+                            TripAgentDetails(
+                                activity: _controller.currentActivity!),
+                          ],
+                        )),
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              bottom: 10.0,
+              right: 10.0,
+              child: Tooltip(
+                message: 'Esconder/Exibir Mapa',
+                child: FloatingActionButton(
+                  onPressed: () {
+                    setState(() {
+                      _showMap = !_showMap;
+                    });
+                  },
+                  child: Icon(
+                    _showMap ? Icons.map : Icons.map_outlined,
+                    color: Colors.white,
                   ),
+                  backgroundColor: Colors.blue,
                 ),
-                Positioned(
-                  bottom: 10.0,
-                  right: 10.0,
-                  child: Tooltip(
-                    message: 'Esconder/Exibir Mapa',
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        setState(() {
-                          _showMap = !_showMap;
-                        });
-                      },
-                      child: Icon(
-                        _showMap ? Icons.map : Icons.map_outlined,
-                        color: Colors.white,
-                      ),
-                      backgroundColor: Colors.blue,
+              ),
+            ),
+            if (_showMap)
+              Positioned(
+                top: 30.0,
+                left: 0.0,
+                right: 0.0,
+                child: Center(
+                  child: ElevatedButton.icon(
+                    onPressed: _endTripDialog,
+                    icon: Icon(
+                      _allowConclusion ? Icons.check : Icons.close,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      _allowConclusion ? "Concluir" : "Cancelar",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          _allowConclusion
+                              ? Colors.green
+                              : Colors
+                                  .red), // Set the background color of the icon
                     ),
                   ),
                 ),
-                if (_showMap)
-                  Positioned(
-                    top: 30.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Center(
-                      child: ElevatedButton.icon(
+              )
+            else
+              Positioned(
+                top: 20.0,
+                left: 0.0,
+                right: 0.0,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  color: Theme.of(context).colorScheme.surface,
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Corrida em andamento. Ative o mapa para ver o ${_controller.currentActivity!.agentActivityType}.",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                        textAlign: TextAlign.center,
+                      ),
+                      ElevatedButton.icon(
                         onPressed: _endTripDialog,
                         icon: Icon(
                           _allowConclusion ? Icons.check : Icons.close,
@@ -227,50 +268,12 @@ class _TripState extends State<Trip> {
                                       .red), // Set the background color of the icon
                         ),
                       ),
-                    ),
-                  )
-                else
-                  Positioned(
-                    top: 20.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      color: Theme.of(context).colorScheme.surface,
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Text(
-                            "Corrida em andamento. Ative o mapa para ver o ${_controller.currentActivity!.agentActivityType}.",
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary),
-                            textAlign: TextAlign.center,
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: _endTripDialog,
-                            icon: Icon(
-                              _allowConclusion ? Icons.check : Icons.close,
-                              color: Colors.white,
-                            ),
-                            label: Text(
-                              _allowConclusion ? "Concluir" : "Cancelar",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  _allowConclusion
-                                      ? Colors.green
-                                      : Colors
-                                          .red), // Set the background color of the icon
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
-              ],
-            ),
-          );
+                ),
+              ),
+          ],
+        );
   }
 
   _createMarkerIcon() async {
@@ -363,6 +366,8 @@ class _TripState extends State<Trip> {
         .child('agent').get().then((value) async {
           if(value.exists){
             _agentStatus();
+            _mockStatus();
+            // _myStatus();
           }
         });
 
@@ -400,7 +405,9 @@ class _TripState extends State<Trip> {
 
             //initialize position listeners
             _agentStatus();
-            _myStatus();
+            _mockStatus();
+            // _myStatus();
+            
             return;
           }
 
@@ -444,6 +451,29 @@ class _TripState extends State<Trip> {
         _markers.add(agentMarker);
       });
     });
+  }
+
+  Timer? _debounce;
+  _mockStatus() {
+    print('mock status');
+    FirebaseDatabase.instance
+        .ref('trips')
+        .child(_controller.currentActivity!.uuid!)
+        .child('passenger')
+        .onValue
+        .listen((querySnapshot) async {
+          final data = querySnapshot.snapshot.value as Map;
+
+          print('dados passageiro');
+          print(data['latitude']);
+          print(data['longitude']);
+            _mock.updateMockLocation(data['latitude'], data['longitude']);
+            if (_debounce?.isActive ?? false) _debounce?.cancel();
+            _debounce = Timer(const Duration(milliseconds: 500), () async {
+              _checkRadius();
+            });
+        });
+    
   }
 
   _myStatus() {

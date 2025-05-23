@@ -128,11 +128,9 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: widget,
-        ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: widget,
       ),
     );
   }
