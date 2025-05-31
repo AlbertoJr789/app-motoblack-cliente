@@ -51,7 +51,6 @@ class _TripState extends State<Trip> {
     super.initState();
     _controller = Provider.of<ActivityController>(context, listen: false);
     _drawAgent();
-    print('init viagem');
     _tripStatus();
   }
 
@@ -366,8 +365,8 @@ class _TripState extends State<Trip> {
         .child('agent').get().then((value) async {
           if(value.exists){
             _agentStatus();
-            _mockStatus();
-            // _myStatus();
+            // _mockStatus();
+            _myStatus();
           }
         });
 
@@ -405,8 +404,8 @@ class _TripState extends State<Trip> {
 
             //initialize position listeners
             _agentStatus();
-            _mockStatus();
-            // _myStatus();
+            // _mockStatus();
+            _myStatus();
             
             return;
           }
