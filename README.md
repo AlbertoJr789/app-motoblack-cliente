@@ -115,7 +115,7 @@ lib/
 
 ### Configuração do Firebase
 1. Crie um projeto no Firebase Console
-2. Adicione aplicativos Android e iOS
+2. Dentro do projeto, crie um Realtime Database (isso caso já não o tenha criado no aplicativo do mototaxista, pois ambos utilizam o mesmo projeto).
 3. Configure as regras do Realtime Database:
 
     ```json
@@ -129,7 +129,7 @@ lib/
         }
     }
     ```
-4. Utilize o <a href="https://firebase.google.com/docs/flutter/setup?hl=pt-br&platform=android"> Flutterfire e o Firebase CLI </a> para configurar o realtime database no projeto 
+4. Utilize o <a href="https://firebase.google.com/docs/flutter/setup?hl=pt-br&platform=android"> Flutterfire e o Firebase CLI </a> para configurar o realtime database no projeto Flutter.
 
 **Execute o aplicativo**
    ```bash
