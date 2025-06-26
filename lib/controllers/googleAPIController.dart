@@ -4,10 +4,13 @@ import 'package:app_motoblack_cliente/models/Address.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
+/** 
+* An alternative approach to HERE API geocoding endpoints
+  Still, this class is not being used but can be swapped on geoCoderController 
+*/
 class GoogleAPIController implements Geocoder {
 
-  static String _apiKey = 'AIzaSyCgo47TDRIpqJ2ZDmMcGWwkxI6oejOju0U';
+  static String _apiKey = '';  // Replace with your actual API key
 
   @override
    geocode(Address address) async {

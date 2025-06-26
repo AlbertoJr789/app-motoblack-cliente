@@ -18,7 +18,7 @@ abstract class Geocoder {
 class GeoCoderController {
 
   Geocoder? geocoder;
-
+  //using Here API as default geocoder
   GeoCoderController({geocoder}): geocoder = geocoder ?? HereAPIController();
 
   // Future<Map<String,double>> geocode() async {

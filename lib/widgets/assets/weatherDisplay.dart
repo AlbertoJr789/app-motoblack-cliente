@@ -1,6 +1,6 @@
 import 'package:app_motoblack_cliente/controllers/destinySelectionController.dart';
 import 'package:flutter/material.dart';
-import 'package:app_motoblack_cliente/controllers/weatherController.dart';
+import 'package:app_motoblack_cliente/controllers/weatherAPIController.dart';
 import 'package:lottie/lottie.dart';
 
 class WeatherDisplay extends StatefulWidget {
@@ -12,7 +12,7 @@ class WeatherDisplay extends StatefulWidget {
 }
 
 class _WeatherDisplayState extends State<WeatherDisplay> {
-  final WeatherController _weatherController = WeatherController();
+  final WeatherAPIController _weatherController = WeatherAPIController();
   Map<String, dynamic>? _weatherData;
   bool _isLoading = true;
   String? _error;

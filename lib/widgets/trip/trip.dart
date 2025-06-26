@@ -405,7 +405,7 @@ class _TripState extends State<Trip> {
             //initialize position listeners
             _agentStatus();
             // _mockStatus();
-            _myStatus();
+            _myStatus(); //comment this piece of code if you're mocking the location and uncomment "_mockStatus"
             
             return;
           }

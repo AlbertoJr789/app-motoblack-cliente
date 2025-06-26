@@ -9,7 +9,7 @@ import 'dart:convert';
 
 class HereAPIController implements Geocoder {
 
-  static String _apiKey = 'qOeyhjddKf_KQt3iImd4QaVhu9QBGFFeh2YKR9Q0B5w';
+  static String _apiKey = ''; // Replace with your actual API key
 
   @override
   geocode(Address address) async {
