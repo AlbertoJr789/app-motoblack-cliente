@@ -120,16 +120,16 @@ lib/
 
     ```json
     {
-    "rules": {
-        ".read": true,
-        ".write": true,
-        "availableAgents":{
-        ".indexOn": ["type"]
+        "rules": {
+            ".read": true,
+            ".write": true,
+            "availableAgents":{
+            ".indexOn": ["type"]
+            }
         }
     }
-    }
     ```
-4. Utilize o <a href="https://firebase.google.com/docs/flutter/setup?hl=pt-br&platform=android"> Firebase CLI </a> para configurar o realtime database no projeto 
+4. Utilize o <a href="https://firebase.google.com/docs/flutter/setup?hl=pt-br&platform=android"> Flutterfire e o Firebase CLI </a> para configurar o realtime database no projeto 
 
 **Execute o aplicativo**
    ```bash
