@@ -29,9 +29,9 @@ Um aplicativo móvel desenvolvido em Flutter para solicitar serviços de moto t�
 - **Material Design**: Design system do Google
 
 ### Backend & APIs
-- **Firebase**: Autenticação, banco de dados e notificações
-- **Google Maps API**: Mapas e geolocalização
-- **HERE API**: Autocomplete de endereços
+- **Firebase**:Banco de dados em tempo real
+- **Google Maps API**: Mapas, geolocalização e navegação
+- **HERE API**: Geocodificação e Autocomplete de endereços
 - **G1 RSS Feed**: Feed de notícias
 - **Open Weather API**: Informações de clima
 
