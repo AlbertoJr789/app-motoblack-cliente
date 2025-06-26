@@ -135,7 +135,20 @@ lib/
    ```bash
    flutter run
    ```
+### API Laravel
 
+- Procure a classe `controllers/apiClient.dart` e insira a url Base em que está hospeada a api Laravel na sua rede LAN (lembre-se de seguir as instruções de configuração no repositório da API também):
+
+```dart
+...
+class ApiClient {
+
+  ApiClient._(){
+    dio.options.connectTimeout = const Duration(seconds: 2);
+    dio.options.receiveTimeout = const Duration(seconds: 3);
+    dio.options.baseUrl = 'http://{{IPV4}}:8000'; // Replace with your Laravel API IPV4
+...
+```
 
 ## 📱 Como Usar
 
