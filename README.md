@@ -48,6 +48,7 @@ shared_preferences: ^2.2.2
 
 ## 📋 Pré-requisitos
 
+- Instalação e configuração da <a href="https://github.com/AlbertoJr789/app-motoblack-site-api">API Moto Black</a> (IMPORTANTE)
 - Flutter SDK (versão >=3.0.0), última versão que compilei foi a 3.24.5
 - Dart SDK
 - Android Studio / VS Code
@@ -55,7 +56,6 @@ shared_preferences: ^2.2.2
 - Conta <a href="https://console.firebase.google.com/u/0/?hl=pt-br"> Firebase </a>
 - Conta para chave de <a href="https://developer.here.com/login"> API Here Technologies </a>
 - Conta para chave de <a href="https://openweathermap.org/api"> API OpenWeather </a>
-- Instalação e configuração da <a href="https://github.com/AlbertoJr789/app-motoblack-site-api">API Moto Black</a> (IMPORTANTE)
 - Dispositivo Android/iOS ou emulador
 
 ## 🏗️ Estrutura do Projeto
