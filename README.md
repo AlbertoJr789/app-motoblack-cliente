@@ -174,4 +174,5 @@ class ApiClient {
 - Avalie o serviço (1-5 estrelas)
 - Deixe um comentário (opcional)
 
+> 💡 **Não conseguiu configurar o projeto ?** [Clique aqui e acesse o vídeo com as instruções](https://www.youtube.com/watch?v=tT4ELnQ14gs) 
 
